@@ -14,12 +14,12 @@
 
 	<modules>
 		<module>stats</module>
-		<module>main-service</module>
 		<module>infra</module>
 		<module>infra/config-server</module>
 		<module>infra/discovery-server</module>
 		<module>infra/gateway-server</module>
 		<module>core</module>  <!-- Новый модуль -->
+		<module>core/main-service</module>
 	</modules>
 
 	<groupId>ru.practicum</groupId>
