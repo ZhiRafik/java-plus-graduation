@@ -1,0 +1,34 @@
+server:
+  port: 0
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # админка main-service
+        - id: main-service-admin
+          uri: lb://main-service
+          predicates:
+            - Path=/api/v1/admin/**
+          filters:
+            - StripPrefix=2
+
+        # пользовательские (users/..., requests/..., events у пользователя)
+        - id: main-service-users
+          uri: lb://main-service
+          predicates:
+            - Path=/api/v1/users/**
+          filters:
+            - StripPrefix=2
+
+        # публичные события /categories /compilations /events
+        - id: main-service-public
+          uri: lb://main-service
+          predicates:
+            - Path=/api/v1/events/**,/api/v1/categories/**,/api/v1/compilations/**
+          filters:
+            - StripPrefix=2

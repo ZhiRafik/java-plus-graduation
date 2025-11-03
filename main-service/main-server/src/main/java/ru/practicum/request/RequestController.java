@@ -54,8 +54,4 @@ public class RequestController {
                                                          @PathVariable Long eventId) {
         return requestService.getRequestByInitiator(userId, eventId);
     }
-
-
-
-
 }
