@@ -38,4 +38,10 @@ public class UserAdminController {
     public void deleteUserById(@PathVariable Long userId) {
         userService.deleteUserById(userId);
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto getUserById(@RequestParam Long id) {
+        return userService.getUserById(id);
+    }
 }

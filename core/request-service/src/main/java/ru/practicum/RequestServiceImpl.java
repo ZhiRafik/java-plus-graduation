@@ -3,18 +3,18 @@ package ru.practicum;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.client.event.EventClient;
+import ru.practicum.client.user.UserAdminClient;
+import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.enums.State;
 import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.dto.request.ParticipationRequestDto;
 import ru.practicum.dto.request.enums.Status;
-import ru.practicum.event.Event;
-import ru.practicum.event.EventRepository;
+import ru.practicum.dto.user.UserDto;
 import ru.practicum.exception.ConflictPropertyConstraintException;
 import ru.practicum.exception.ConflictRelationsConstraintException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.user.User;
-import ru.practicum.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,11 +23,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
-
     private final RequestRepository requestRepository;
-    private final UserRepository userRepository;
     private final RequestMapper requestMapper;
-    private final EventRepository eventRepository;
+    private final EventClient eventClient;
+    private final UserAdminClient userAdminClient;
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
@@ -187,16 +186,12 @@ public class RequestServiceImpl implements RequestService {
                 .toList();
     }
 
-    private User findUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("Пользователь с id " + userId + " не найден")
-        );
+    private UserDto findUser(Long userId) {
+        return userAdminClient.getUserById(userId);
     }
 
-    private Event findEvent(Long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException("Событие  с id " + eventId + " не найдено")
-        );
+    private EventFullDto findEvent(Long eventId) {
+        return eventClient.getEventById(eventId, null);
     }
 
     private void addConfirmedRequestToEvent(Event event) {

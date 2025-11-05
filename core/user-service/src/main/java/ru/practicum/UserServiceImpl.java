@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.user.UserCreateDto;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserShortDto;
@@ -39,6 +40,11 @@ public class UserServiceImpl implements UserService {
         return users.getContent().stream()
                 .map(UserMapperCustom::toUserDto)
                 .toList();
+    }
+
+    public UserDto getUserById(Long id) {
+        checkUserId(id);
+        return UserMapperCustom.toUserDto(userRepository.findById(id).get());
     }
 
     public void deleteUserById(Long id) {

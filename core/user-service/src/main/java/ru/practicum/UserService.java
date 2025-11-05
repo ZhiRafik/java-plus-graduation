@@ -1,5 +1,6 @@
 package ru.practicum;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.user.UserCreateDto;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserShortDto;
@@ -15,4 +16,6 @@ public interface UserService {
     void deleteUserById(Long id);
 
     UserShortDto getUserShortById(Long id);
+
+    UserDto getUserById(Long id);
 }
