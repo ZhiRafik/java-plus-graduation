@@ -1,0 +1,33 @@
+server:
+  port: 8080
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/**
+        - id: comment_service_route
+          uri: lb://comment-service
+          predicates:
+            - Path=/**
+        - id: event_service_route
+          uri: lb://event-service
+          predicates:
+            - Path=/**
+        - id: request_service_route
+          uri: lb://request-service
+          predicates:
+            - Path=/**
+        - id: user_service_route
+          uri: lb://user-service
+          predicates:
+            - Path=/**
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.server: DEBUG
