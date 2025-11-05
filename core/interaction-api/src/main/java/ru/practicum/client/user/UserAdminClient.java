@@ -1,11 +1,11 @@
 package ru.practicum.client.user;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.MyFeignClientFallback;
 import ru.practicum.dto.user.UserCreateDto;
 import ru.practicum.dto.user.UserDto;
+import ru.practicum.dto.user.UserShortDto;
 
 import java.util.List;
 
@@ -25,4 +25,7 @@ public interface UserAdminClient {
 
     @GetMapping
     UserDto getUserById(@RequestParam Long id);
+
+    @GetMapping("/short")
+    UserShortDto getUserShortById(@RequestParam Long id);
 }

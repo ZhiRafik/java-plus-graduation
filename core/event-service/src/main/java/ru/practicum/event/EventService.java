@@ -1,5 +1,6 @@
 package ru.practicum.event;
 
+import org.springframework.http.ResponseEntity;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.NewEventDto;
@@ -28,4 +29,8 @@ public interface EventService {
 
     EventFullDto updateAdminEvent(UpdatedEventDto updatedEventDto,
                                             long eventId, String ip);
+
+    EventFullDto saveFullEvent(EventFullDto event);
+
+    Integer checkInitiatorEvent(Long initiatorId, Long eventId);
 }

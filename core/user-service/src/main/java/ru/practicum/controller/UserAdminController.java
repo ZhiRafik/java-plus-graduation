@@ -1,12 +1,14 @@
-package ru.practicum;
+package ru.practicum.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.service.UserServiceImpl;
 import ru.practicum.dto.user.UserCreateDto;
 import ru.practicum.dto.user.UserDto;
+import ru.practicum.dto.user.UserShortDto;
 
 import java.util.List;
 
@@ -43,5 +45,11 @@ public class UserAdminController {
     @ResponseStatus(HttpStatus.OK)
     public UserDto getUserById(@RequestParam Long id) {
         return userService.getUserById(id);
+    }
+
+    @GetMapping("/short")
+    @ResponseStatus(HttpStatus.OK)
+    public UserShortDto getUserShortById(@RequestParam Long id) {
+        return userService.getUserShortById(id);
     }
 }

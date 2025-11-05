@@ -1,21 +1,24 @@
-package ru.practicum;
+package ru.practicum.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.mapper.CommentMapper;
+import ru.practicum.client.event.EventClient;
+import ru.practicum.client.user.UserAdminClient;
 import ru.practicum.dto.comment.CommentDto;
 import ru.practicum.dto.comment.DeleteCommentsDto;
 import ru.practicum.dto.comment.NewCommentDto;
 import ru.practicum.dto.comment.UpdateCommentDto;
+import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.enums.State;
-import ru.practicum.event.Event;
-import ru.practicum.event.EventRepository;
+import ru.practicum.dto.user.UserDto;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConflictRelationsConstraintException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.user.User;
-import ru.practicum.user.UserRepository;
+import ru.practicum.model.Comment;
+import ru.practicum.repository.CommentRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,29 +29,25 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final EventRepository eventRepository;
     private final CommentMapper commentMapper;
+    private final EventClient eventClient;
+    private final UserAdminClient userAdminClient;
 
 
     @Override
     public CommentDto createComment(Long userId, Long eventId, NewCommentDto newCommentDto) {
-
-        Event event = getEvent(eventId);
-
+        EventFullDto event = getEvent(eventId);
         if(!event.getState().equals(State.PUBLISHED))
             throw new ConflictRelationsConstraintException("Нельзя добавить комментарий если событие не опубликовано");
-
-        User user = getUser(userId);
 
         Comment comment = Comment.builder()
                 .created(LocalDateTime.now())
                 .content(newCommentDto.getContent())
-                .event(event)
-                .user(user)
+                .eventId(eventId)
+                .userId(userId)
                 .build();
 
-        return  commentMapper.commentToDto(commentRepository.save(comment));
+        return commentMapper.commentToDto(commentRepository.save(comment));
     }
 
 
@@ -73,9 +72,15 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentDto> getComments(String content, Long userId, Long eventId,
                                         String rangeStart, String rangeEnd, Integer from, Integer size) {
-        User user = null; Event event = null;
-        if (userId != null) user = getUser(userId);
-        if (eventId != null) event = getEvent(eventId);;
+        UserDto user = null;
+        EventFullDto event = null;
+
+        if (userId != null) {
+            user = getUser(userId);
+        }
+        if (eventId != null) {
+            event = getEvent(eventId);
+        };
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
         if (rangeStart == null || rangeStart.isBlank()) {
@@ -136,16 +141,12 @@ public class CommentServiceImpl implements CommentService {
 
     }
 
-    private User getUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("Пользователь с id: " + userId + " не существует")
-        );
+    private UserDto getUser(Long userId) {
+        return userAdminClient.getUserById(userId);
     }
 
-    private Event getEvent(Long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException("События с id: " + eventId + " не существует")
-        );
+    private EventFullDto getEvent(Long eventId) {
+        return eventClient.getEventById(eventId, "commentService");
     }
 
     private Comment getCommentByUserId(Long userId, Long commentId) {

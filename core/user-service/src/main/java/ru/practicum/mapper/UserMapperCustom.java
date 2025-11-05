@@ -1,8 +1,9 @@
-package ru.practicum;
+package ru.practicum.mapper;
 
 import ru.practicum.dto.user.UserCreateDto;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserShortDto;
+import ru.practicum.model.User;
 
 public class UserMapperCustom {
     public static User toUser(UserCreateDto userCreateDto) {

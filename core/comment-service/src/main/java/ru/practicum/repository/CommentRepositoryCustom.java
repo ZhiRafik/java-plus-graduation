@@ -1,7 +1,8 @@
-package ru.practicum;
+package ru.practicum.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import ru.practicum.model.Comment;
 
 import java.time.LocalDateTime;
 

@@ -6,11 +6,13 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.NewEventDto;
 import ru.practicum.dto.event.UpdatedEventDto;
+import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
 
@@ -122,5 +124,15 @@ public class EventController {
                 rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size,
                 ip, "admin");
+    }
+
+    @PatchMapping("/admin/events/increment/{eventId}")
+    public EventFullDto saveFullEvent(EventFullDto event) {
+        return eventService.saveFullEvent(event);
+    }
+
+    @GetMapping("/admin/events/{eventId}/{initiatorId}")
+    public Integer checkInitiatorEvent(Long initiatorId, Long eventId) {
+        return eventService.checkInitiatorEvent(initiatorId, eventId);
     }
 }

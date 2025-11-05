@@ -9,21 +9,17 @@ import ru.practicum.EndpointHitDto;
 import ru.practicum.StatsClient;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.category.CategoryRepository;
+import ru.practicum.client.user.UserAdminClient;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.NewEventDto;
 import ru.practicum.dto.event.UpdatedEventDto;
 import ru.practicum.dto.event.enums.State;
 import ru.practicum.dto.event.enums.StateAction;
-import ru.practicum.event.Event;
-import ru.practicum.event.EventDtoMapper;
-import ru.practicum.event.EventRepository;
-import ru.practicum.event.EventService;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConditionsNotMetException;
 import ru.practicum.exception.ConflictPropertyConstraintException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,11 +31,11 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
-    private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final StatsClient statsClient;
     private final CategoryRepository categoryRepository;
     private final EventDtoMapper eventDtoMapper;
+    private final UserAdminClient userAdminClient;
 
     public EventFullDto saveEvent(NewEventDto newEventDto, long userId, String ip) {
         log.debug("Попытка сохранить новое событие: {}", newEventDto);
@@ -233,7 +229,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEventsByUserId(long userId, Integer from, Integer size, String ip) {
         log.debug("Получен запрос на получение событий пользователя с id={} (from={}, size={}, ip={})", userId, from, size, ip);
 
-        if (userRepository.findById(userId).isEmpty()) {
+        if (userAdminClient.getUserById(userId) == null) {
             log.warn("Пользователь с id={} не найден", userId);
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
@@ -273,7 +269,7 @@ public class EventServiceImpl implements EventService {
         log.debug("Получен запрос на получение события с id={} пользователя с id={} (from={}, size={}, ip={})",
                 eventId, userId, from, size, ip);
 
-        if (userRepository.findById(userId).isEmpty()) {
+        if (userAdminClient.getUserById(userId) == null) {
             log.warn("Пользователь с id={} не найден", userId);
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
@@ -331,6 +327,93 @@ public class EventServiceImpl implements EventService {
         return dto;
     }
 
+    public Integer checkInitiatorEvent(Long initiatorId, Long eventId) {
+        Optional<Event> found = eventRepository.findByInitiatorIdAndId(initiatorId, eventId);
+        if (found.isEmpty()) {
+            return Integer.valueOf(0);
+        } else {
+            return Integer.valueOf(1);
+        }
+    }
+
+    public EventFullDto saveFullEvent(EventFullDto event) {
+        Event foundEvent = checkAndGetEventById(event.getId());
+        applyUpdateFromFull(foundEvent, event);
+        Event saved = eventRepository.save(foundEvent);
+        return eventDtoMapper.mapToFullDto(saved);
+    }
+
+    private void applyUpdateFromFull(Event event, EventFullDto dto) {
+        log.info("Начато полное обновление Event из EventFullDto");
+
+        if (dto.getAnnotation() != null) {
+            event.setAnnotation(dto.getAnnotation());
+        }
+
+        if (dto.getDescription() != null) {
+            event.setDescription(dto.getDescription());
+        }
+
+        if (dto.getTitle() != null) {
+            event.setTitle(dto.getTitle());
+        }
+
+        if (dto.getCategory() != null && dto.getCategory().getId() != null) {
+            event.setCategory(dto.getCategory().getId());
+        }
+
+        if (dto.getConfirmedRequests() >= 0) {
+            event.setConfirmedRequests(dto.getConfirmedRequests());
+        }
+
+        if (dto.getParticipantLimit() >= 0) {
+            event.setParticipantLimit(dto.getParticipantLimit());
+        }
+
+        if (dto.getCreatedOn() != null) {
+            event.setCreatedOn(dto.getCreatedOn());
+        }
+
+        if (dto.getEventDate() != null) {
+            event.setEventDate(dto.getEventDate());
+        }
+
+        if (dto.getPublishedOn() != null) {
+            event.setPublishedOn(dto.getPublishedOn());
+        }
+
+        if (dto.getInitiator() != null && dto.getInitiator().getId() != null) {
+            event.setInitiatorId(dto.getInitiator().getId());
+        }
+
+        if (dto.getLocation() != null) {
+            if (dto.getLocation().getLat() != 0.0) {
+                event.setLocationLat(dto.getLocation().getLat());
+            }
+            if (dto.getLocation().getLon() != 0.0) {
+                event.setLocationLon(dto.getLocation().getLon());
+            }
+        }
+
+        if (dto.getPaid() != null) {
+            event.setPaid(dto.getPaid());
+        }
+
+        if (dto.getRequestModeration() != null) {
+            event.setRequestModeration(dto.getRequestModeration());
+        }
+
+        if (dto.getState() != null) {
+            event.setState(dto.getState());
+        }
+
+        if (dto.getViews() != null) {
+            event.setViews(dto.getViews());
+        }
+
+        log.info("Обновление Event завершено успешно");
+    }
+
 
     private void applyUpdate(Event event, UpdatedEventDto dto) {
         log.info("Начат процесс обновления события, просматриваются поля на изменения");
@@ -377,7 +460,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void checkUserId(long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
+        if (userAdminClient.getUserById(userId) == null) {
             log.warn("Пользователь с id {} не найден", userId);
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }

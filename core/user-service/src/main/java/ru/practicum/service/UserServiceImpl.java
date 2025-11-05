@@ -1,4 +1,4 @@
-package ru.practicum;
+package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -6,12 +6,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.user.UserCreateDto;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.exception.ConflictPropertyConstraintException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.mapper.UserMapperCustom;
+import ru.practicum.model.User;
+import ru.practicum.repository.UserRepository;
+import ru.practicum.service.UserService;
 
 import java.util.List;
 

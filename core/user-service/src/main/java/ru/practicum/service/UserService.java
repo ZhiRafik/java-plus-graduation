@@ -1,4 +1,4 @@
-package ru.practicum;
+package ru.practicum.service;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.user.UserCreateDto;

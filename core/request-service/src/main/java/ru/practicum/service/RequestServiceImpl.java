@@ -1,4 +1,4 @@
-package ru.practicum;
+package ru.practicum.service;
 
 
 import lombok.RequiredArgsConstructor;
@@ -15,9 +15,13 @@ import ru.practicum.dto.user.UserDto;
 import ru.practicum.exception.ConflictPropertyConstraintException;
 import ru.practicum.exception.ConflictRelationsConstraintException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.mapper.RequestMapper;
+import ru.practicum.model.Request;
+import ru.practicum.repository.RequestRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,15 +42,15 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto addUserRequest(Long userId, Long eventId) {
-        User user = findUser(userId);
-        Event event = findEvent(eventId);
+        UserDto user = findUser(userId);
+        EventFullDto event = findEvent(eventId);
         requestRepository.findByRequester_IdAndEvent_Id(userId, eventId).ifPresent(
                 request -> {
                     throw new ConflictPropertyConstraintException("Нельзя добавить повторный запрос");
                 }
         );
 
-        if (event.getInitiatorId() == user.getId()) {
+        if (Objects.equals(event.getInitiator().getId(), user.getId())) {
             throw new ConflictRelationsConstraintException(
                     "Инициатор события не может добавить запрос на участие в своём событии"
             );
@@ -67,9 +71,9 @@ public class RequestServiceImpl implements RequestService {
         }
 
         Request request = Request.builder()
-                .requester(user)
+                .requesterId(user.getId())
                 .status(status)
-                .event(event)
+                .eventId(event.getId())
                 .created(LocalDateTime.now().withNano(
                         (LocalDateTime.now().getNano() / 1_000_000) * 1_000_000
                         ))
@@ -81,7 +85,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto cancelUserRequest(Long userId, Long requestId) {
-        User user = findUser(userId);
+        UserDto user = findUser(userId);
         Request request = requestRepository.findById(requestId).orElseThrow(
                 () -> new NotFoundException("Запрос с id " + requestId + " не найден")
         );
@@ -94,7 +98,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public EventRequestStatusUpdateResult changeRequestStatus(Long initiatorId, Long eventId, EventRequestStatusUpdateRequest httpRequest) {
         findUser(initiatorId);
-        Event event = findEvent(eventId);
+        EventFullDto event = findEvent(eventId);
         checkInitiatorEvent(initiatorId, eventId);
 
         List<Request> requests = requestRepository.findAllByIdIn(httpRequest.getRequestIds());
@@ -103,7 +107,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictPropertyConstraintException("Достигнут лимит запросов на участие");
 
         List<Long> invalidRequestByEventIds = requests.stream()
-                .filter(request -> request.getEvent().getId() != eventId)
+                .filter(request -> !Objects.equals(request.getEventId(), eventId))
                 .map(Request::getId)
                 .toList();
 
@@ -136,8 +140,8 @@ public class RequestServiceImpl implements RequestService {
         }
 
         long participantLimit = event.getParticipantLimit();
-        long confirmedRequests = event.getConfirmedRequests();
-        long requestsSize = requests.size();
+        int confirmedRequests = event.getConfirmedRequests();
+        int requestsSize = requests.size();
 
         if (participantLimit - confirmedRequests < requestsSize)
             throw new ConflictPropertyConstraintException("Достигнут лимит запросов на участие");
@@ -148,8 +152,7 @@ public class RequestServiceImpl implements RequestService {
                 .toList();
         requestRepository.saveAll(confirmedRequestsList);
         event.setConfirmedRequests(confirmedRequests + requestsSize);
-        eventRepository.save(event);
-
+        eventClient.saveFullEvent(event);
 
         List<ParticipationRequestDto> confirmedRequestDTOs = confirmedRequestsList.stream()
                 .map(requestMapper::toParticipationRequestDto)
@@ -191,18 +194,19 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private EventFullDto findEvent(Long eventId) {
-        return eventClient.getEventById(eventId, null);
+        return eventClient.getEventById(eventId, "requestService");
     }
 
-    private void addConfirmedRequestToEvent(Event event) {
+    private void addConfirmedRequestToEvent(EventFullDto event) {
         event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-        eventRepository.save(event);
+        eventClient.saveFullEvent(event);
     }
 
     private void checkInitiatorEvent(Long initiatorId, Long eventId) {
-        eventRepository.findByInitiatorIdAndId(initiatorId, eventId).orElseThrow(
-                () -> new NotFoundException(
-                        "У пользователя с id " + initiatorId + " не найдено событие с id " + eventId)
-        );
+        if (eventClient.checkInitiatorEvent(initiatorId, eventId) == 0) {
+            throw new NotFoundException(
+                    "У пользователя с id " + initiatorId + " не найдено событие с id " + eventId
+            );
+        }
     }
 }

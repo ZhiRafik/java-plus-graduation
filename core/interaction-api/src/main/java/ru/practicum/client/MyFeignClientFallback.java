@@ -3,6 +3,7 @@ package ru.practicum.client;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.client.category.AdminCategoryClient;
@@ -33,6 +34,7 @@ import ru.practicum.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.dto.request.ParticipationRequestDto;
 import ru.practicum.dto.user.UserCreateDto;
 import ru.practicum.dto.user.UserDto;
+import ru.practicum.dto.user.UserShortDto;
 
 import java.util.List;
 
@@ -62,6 +64,12 @@ public class MyFeignClientFallback implements UserAdminClient, RequestClient, Ev
     @ResponseStatus(HttpStatus.OK)
     public UserDto getUserById(Long id) {
         throw new RuntimeException("Сервис user-service временно недоступен (deleteUserById)");
+    }
+
+    @GetMapping("/short")
+    @ResponseStatus(HttpStatus.OK)
+    public UserShortDto getUserShortById(@RequestParam Long id) {
+        throw new RuntimeException("Сервис user-service временно недоступен (getUserShortById)");
     }
 
 
@@ -99,6 +107,16 @@ public class MyFeignClientFallback implements UserAdminClient, RequestClient, Ev
     @Override
     public EventFullDto saveEvent(NewEventDto newEventDto, Long userId, String ip) {
         throw new RuntimeException("Сервис event-service временно недоступен (saveEvent)");
+    }
+
+    @Override
+    public EventFullDto saveFullEvent(EventFullDto event) {
+        throw new RuntimeException("Сервис event-service временно недоступен (saveFullEvent)");
+    }
+
+    @Override
+    public Integer checkInitiatorEvent(Long initiatorId, Long eventId) {
+        throw new RuntimeException("Сервис event-service временно недоступен (checkInitiatorEvent)");
     }
 
     @Override

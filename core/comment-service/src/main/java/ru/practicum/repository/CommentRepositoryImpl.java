@@ -1,4 +1,4 @@
-package ru.practicum;
+package ru.practicum.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import ru.practicum.model.Comment;
+import ru.practicum.repository.CommentRepositoryCustom;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
