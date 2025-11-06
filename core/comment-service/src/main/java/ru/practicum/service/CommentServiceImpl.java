@@ -27,9 +27,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
-
     private final CommentRepository commentRepository;
-    private final CommentMapper commentMapper;
     private final EventClient eventClient;
     private final UserAdminClient userAdminClient;
 
@@ -47,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
                 .userId(userId)
                 .build();
 
-        return commentMapper.commentToDto(commentRepository.save(comment));
+        return CommentMapper.commentToDto(commentRepository.save(comment));
     }
 
 
@@ -58,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
 
         comment.setContent(updateCommentDto.getContent());
 
-        return commentMapper.commentToDto(commentRepository.save(comment));
+        return CommentMapper.commentToDto(commentRepository.save(comment));
 
     }
 
@@ -105,13 +103,13 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.getComments(content, userId, eventId,
                         start, end, from, size, page)
                 .stream()
-                .map(commentMapper::commentToDto)
+                .map(CommentMapper::commentToDto)
                 .toList();
     }
 
     @Override
     public CommentDto getCommentById(Long commentId) {
-        return commentMapper.commentToDto(getComment(commentId));
+        return CommentMapper.commentToDto(getComment(commentId));
     }
 
     @Override
@@ -119,7 +117,7 @@ public class CommentServiceImpl implements CommentService {
         getUser(userId);
         List<Comment> commentsList = commentRepository.findByUserId(userId);
         return commentsList.stream()
-                .map(commentMapper::commentToDto)
+                .map(CommentMapper::commentToDto)
                 .toList();
     }
 

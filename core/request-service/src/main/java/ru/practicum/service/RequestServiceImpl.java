@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
-    private final RequestMapper requestMapper;
     private final EventClient eventClient;
     private final UserAdminClient userAdminClient;
 
@@ -36,7 +35,7 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         findUser(userId);
         return requestRepository.findByRequesterId(userId).stream()
-                .map(requestMapper::toParticipationRequestDto)
+                .map(RequestMapper::toParticipationRequestDto)
                 .collect(Collectors.toList());
     }
 
@@ -79,7 +78,7 @@ public class RequestServiceImpl implements RequestService {
                         ))
                 .build();
 
-        return requestMapper.toParticipationRequestDto(requestRepository.save(request));
+        return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
     }
 
 
@@ -92,7 +91,7 @@ public class RequestServiceImpl implements RequestService {
 
         request.setStatus(Status.CANCELED);
 
-        return requestMapper.toParticipationRequestDto(requestRepository.save(request));
+        return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
     }
 
     @Override
@@ -130,7 +129,7 @@ public class RequestServiceImpl implements RequestService {
             requestRepository.saveAll(cancelRequests);
 
             List<ParticipationRequestDto> requestDTOs = requests.stream()
-                    .map(requestMapper::toParticipationRequestDto)
+                    .map(RequestMapper::toParticipationRequestDto)
                     .toList();
 
             return EventRequestStatusUpdateResult.builder()
@@ -155,7 +154,7 @@ public class RequestServiceImpl implements RequestService {
         eventClient.saveFullEvent(event);
 
         List<ParticipationRequestDto> confirmedRequestDTOs = confirmedRequestsList.stream()
-                .map(requestMapper::toParticipationRequestDto)
+                .map(RequestMapper::toParticipationRequestDto)
                 .toList();
 
         List<ParticipationRequestDto> canceledRequestDTOs = List.of();
@@ -168,7 +167,7 @@ public class RequestServiceImpl implements RequestService {
             requestRepository.saveAll(cancelRequests);
 
             canceledRequestDTOs = cancelRequests.stream()
-                    .map(requestMapper::toParticipationRequestDto)
+                    .map(RequestMapper::toParticipationRequestDto)
                     .toList();
         }
 
@@ -185,7 +184,7 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getRequestByInitiator(Long userId, Long eventId) {
         checkInitiatorEvent(userId, eventId);
         return requestRepository.findByEventId(eventId).stream()
-                .map(requestMapper::toParticipationRequestDto)
+                .map(RequestMapper::toParticipationRequestDto)
                 .toList();
     }
 

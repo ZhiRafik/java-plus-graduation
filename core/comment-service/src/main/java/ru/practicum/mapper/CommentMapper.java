@@ -1,15 +1,15 @@
 package ru.practicum.mapper;
 
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import ru.practicum.dto.comment.CommentDto;
 import ru.practicum.model.Comment;
 
-@Mapper(componentModel = "spring")
-public interface CommentMapper {
-
-    @Mapping(target = "event", source = "eventId")
-    @Mapping(target = "user", source = "userId")
-    CommentDto commentToDto(Comment comment);
+public class CommentMapper {
+    public static CommentDto commentToDto(Comment comment) {
+        return CommentDto.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .user(comment.getUserId())
+                .event(comment.getEventId())
+                .build();
+    }
 }

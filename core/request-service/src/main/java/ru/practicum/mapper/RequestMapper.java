@@ -1,14 +1,15 @@
 package ru.practicum.mapper;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import ru.practicum.dto.request.ParticipationRequestDto;
 import ru.practicum.model.Request;
 
-@Mapper(componentModel = "spring")
-public interface RequestMapper {
-
-    @Mapping(target = "event", source = "eventId")
-    @Mapping(target = "requester", source = "requesterId")
-    ParticipationRequestDto toParticipationRequestDto(Request request);
-
+public class RequestMapper {
+    public static  ParticipationRequestDto toParticipationRequestDto(Request request) {
+        return ParticipationRequestDto.builder()
+                .id(request.getId())
+                .event(request.getEventId())
+                .requester(request.getRequesterId())
+                .created(request.getCreated())
+                .status(request.getStatus())
+                .build();
+    }
 }
