@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS events (
     request_moderation BOOLEAN,
     state VARCHAR(32),
     title VARCHAR(255) NOT NULL,
-    FOREIGN KEY (initiator_id) REFERENCES users(id),
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 

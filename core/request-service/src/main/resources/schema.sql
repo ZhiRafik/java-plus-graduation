@@ -4,7 +4,5 @@ CREATE TABLE IF NOT EXISTS requests (
     event_id INT NOT NULL,
     status VARCHAR(32) NOT NULL,
     requester_id INT NOT NULL,
-    created TIMESTAMP NOT NULL,
-    FOREIGN KEY (event_id) REFERENCES events(id),
-    FOREIGN KEY (requester_id) REFERENCES users(id)
+    created TIMESTAMP NOT NULL
 );

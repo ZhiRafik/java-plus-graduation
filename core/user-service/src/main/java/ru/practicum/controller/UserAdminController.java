@@ -41,9 +41,9 @@ public class UserAdminController {
         userService.deleteUserById(userId);
     }
 
-    @GetMapping
+    @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto getUserById(@RequestParam Long id) {
+    public UserDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 

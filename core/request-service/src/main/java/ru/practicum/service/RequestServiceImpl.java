@@ -35,7 +35,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         findUser(userId);
-        return requestRepository.findByRequester_Id(userId).stream()
+        return requestRepository.findByRequesterId(userId).stream()
                 .map(requestMapper::toParticipationRequestDto)
                 .collect(Collectors.toList());
     }
@@ -44,7 +44,7 @@ public class RequestServiceImpl implements RequestService {
     public ParticipationRequestDto addUserRequest(Long userId, Long eventId) {
         UserDto user = findUser(userId);
         EventFullDto event = findEvent(eventId);
-        requestRepository.findByRequester_IdAndEvent_Id(userId, eventId).ifPresent(
+        requestRepository.findByRequesterIdAndEventId(userId, eventId).ifPresent(
                 request -> {
                     throw new ConflictPropertyConstraintException("Нельзя добавить повторный запрос");
                 }
@@ -161,7 +161,7 @@ public class RequestServiceImpl implements RequestService {
         List<ParticipationRequestDto> canceledRequestDTOs = List.of();
 
         if (participantLimit - confirmedRequests == requestsSize) {
-            List<Request> pendingRequests = requestRepository.findByEvent_IdAndStatus(eventId, Status.PENDING);
+            List<Request> pendingRequests = requestRepository.findByEventIdAndStatus(eventId, Status.PENDING);
             List<Request> cancelRequests = pendingRequests.stream()
                     .peek(request -> request.setStatus(Status.REJECTED))
                     .toList();
@@ -184,7 +184,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<ParticipationRequestDto> getRequestByInitiator(Long userId, Long eventId) {
         checkInitiatorEvent(userId, eventId);
-        return requestRepository.findByEvent_Id(eventId).stream()
+        return requestRepository.findByEventId(eventId).stream()
                 .map(requestMapper::toParticipationRequestDto)
                 .toList();
     }
