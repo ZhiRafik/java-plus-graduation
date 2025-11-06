@@ -116,7 +116,7 @@ public class RequestServiceImpl implements RequestService {
         List<Request> requests = requestRepository.findAllByIdIn(httpRequest.getRequestIds());
         log.info("Найдено {} запрос(ов) для обновления: {}", requests.size(), httpRequest.getRequestIds());
 
-        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() == event.getParticipantLimit()) {
+        if (event.getConfirmedRequests() == event.getParticipantLimit() && event.getParticipantLimit() != 0) {
             log.warn("Лимит участников ({}) для события {} достигнут", event.getParticipantLimit(), eventId);
             throw new ConflictPropertyConstraintException("Достигнут лимит запросов на участие");
         }

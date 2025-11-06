@@ -339,9 +339,12 @@ public class EventServiceImpl implements EventService {
     }
 
     public EventFullDto saveFullEvent(EventFullDto event) {
+        log.info("Начат процесс полного сохранения события");
         Event foundEvent = checkAndGetEventById(event.getId());
+        log.debug("Количество запросов до обновления: " + foundEvent.getConfirmedRequests());
         applyUpdateFromFull(foundEvent, event);
         Event saved = eventRepository.save(foundEvent);
+        log.debug("Количество запросов после обновления: " + saved.getConfirmedRequests());
         return eventDtoMapper.mapToFullDto(saved);
     }
 

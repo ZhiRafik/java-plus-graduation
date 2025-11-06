@@ -3,6 +3,7 @@ package ru.practicum.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.service.RequestService;
@@ -12,6 +13,7 @@ import ru.practicum.dto.request.ParticipationRequestDto;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class RequestController {
@@ -45,7 +47,10 @@ public class RequestController {
     public EventRequestStatusUpdateResult changeRequestStatus(@PathVariable Long userId,
                                                               @PathVariable Long eventId,
                                                               @Valid @RequestBody EventRequestStatusUpdateRequest request) {
-        return requestService.changeRequestStatus(userId, eventId, request);
+        log.info("In changeRequestStatus: userid {}, eventId {}", userId, eventId);
+        EventRequestStatusUpdateResult updateResult = requestService.changeRequestStatus(userId, eventId, request);
+        log.info("Out changeRequestStatus: updateResult {}", updateResult);
+        return updateResult;
     }
 
 
