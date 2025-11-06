@@ -126,13 +126,14 @@ public class EventController {
                 ip, "admin");
     }
 
-    @PatchMapping("/admin/events/increment/{eventId}")
-    public EventFullDto saveFullEvent(EventFullDto event) {
+    @PostMapping("/admin/events/increment")
+    public EventFullDto saveFullEvent(@RequestBody EventFullDto event) {
         return eventService.saveFullEvent(event);
     }
 
     @GetMapping("/admin/events/{eventId}/{initiatorId}")
-    public Integer checkInitiatorEvent(Long initiatorId, Long eventId) {
-        return eventService.checkInitiatorEvent(initiatorId, eventId);
+    public Integer checkInitiatorEvent(@PathVariable("eventId") Long eventId,
+                                       @PathVariable("initiatorId") Long initiatorId) {
+        return eventService.checkInitiatorEvent(eventId, initiatorId);
     }
 }

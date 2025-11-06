@@ -18,7 +18,6 @@ import static ru.practicum.category.CategoryMapperCustom.toEntity;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
-
     private final CategoryRepository repository;
     private final EventRepository eventRepository;
 

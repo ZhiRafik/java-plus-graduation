@@ -1,4 +1,4 @@
-package ru.practicum.Controller;
+package ru.practicum.controller;
 
 
 import jakarta.validation.Valid;

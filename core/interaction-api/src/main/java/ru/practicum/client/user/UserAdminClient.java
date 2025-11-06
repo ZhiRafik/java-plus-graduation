@@ -23,9 +23,9 @@ public interface UserAdminClient {
     @DeleteMapping("/{userId}")
     void deleteUserById(@PathVariable Long userId);
 
-    @GetMapping
-    UserDto getUserById(@RequestParam Long id);
+    @GetMapping("/{userId}")
+    UserDto getUserById(@PathVariable Long userId);
 
     @GetMapping("/short")
-    UserShortDto getUserShortById(@RequestParam Long id);
+    UserShortDto getUserShortById(@RequestParam("userId") Long userId);
 }

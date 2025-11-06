@@ -229,10 +229,12 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEventsByUserId(long userId, Integer from, Integer size, String ip) {
         log.debug("Получен запрос на получение событий пользователя с id={} (from={}, size={}, ip={})", userId, from, size, ip);
 
+        log.debug("Проверка существования пользователя с id={}", userId);
         if (userAdminClient.getUserById(userId) == null) {
             log.warn("Пользователь с id={} не найден", userId);
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
         }
+        log.debug("Пользователь с id {} найден", userId);
 
         String uri = "/users/" + userId + "/events";
         statsClient.saveHit(EndpointHitDto.builder()
@@ -327,7 +329,7 @@ public class EventServiceImpl implements EventService {
         return dto;
     }
 
-    public Integer checkInitiatorEvent(Long initiatorId, Long eventId) {
+    public Integer checkInitiatorEvent(Long eventId, Long initiatorId) {
         Optional<Event> found = eventRepository.findByInitiatorIdAndId(initiatorId, eventId);
         if (found.isEmpty()) {
             return Integer.valueOf(0);

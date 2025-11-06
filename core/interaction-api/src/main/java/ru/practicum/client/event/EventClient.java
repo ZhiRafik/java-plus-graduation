@@ -70,9 +70,10 @@ public interface EventClient {
                                       @RequestParam(defaultValue = "10") Integer size,
                                       @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
 
-    @PatchMapping("/admin/events/increment/{eventId}")
-    EventFullDto saveFullEvent(EventFullDto event);
+    @PostMapping("/admin/events/increment")
+    EventFullDto saveFullEvent(@RequestBody EventFullDto event);
 
     @GetMapping("/admin/events/{eventId}/{initiatorId}")
-    Integer checkInitiatorEvent(Long initiatorId, Long eventId);
+    Integer checkInitiatorEvent(@PathVariable("eventId") Long eventId,
+                                @PathVariable("initiatorId") Long initiatorId);
 }

@@ -25,6 +25,12 @@ spring:
     username: commentservice
     password: commentservice
 
+feign:
+  client:
+    config:
+      user-service:
+        decode404: true
+
 stats-server:
   url: http://stats-server
 

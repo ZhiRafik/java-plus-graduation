@@ -63,7 +63,7 @@ public class MyFeignClientFallback implements UserAdminClient, RequestClient, Ev
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public UserDto getUserById(Long id) {
-        throw new RuntimeException("Сервис user-service временно недоступен (deleteUserById)");
+        throw new RuntimeException("Сервис user-service временно недоступен (getUserById)");
     }
 
     @GetMapping("/short")

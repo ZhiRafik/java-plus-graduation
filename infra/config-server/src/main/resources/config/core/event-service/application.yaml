@@ -1,6 +1,5 @@
 server:
   port: 0
-
 spring:
   sql:
     init:
@@ -28,14 +27,24 @@ spring:
 stats-server:
   url: http://stats-server
 
+feign:
+  client:
+    config:
+      user-service:
+        decode404: true
+        loggerLevel: FULL
+
 logging:
   level:
     org.springframework.orm.jpa: INFO
     org.springframework.transaction: INFO
     org.springframework.transaction.interceptor: TRACE
     org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
     org.zalando.logbook: TRACE
     ru.practicum: TRACE
+    feign: TRACE
+    feign.Logger: TRACE
 
 eureka:
   client:

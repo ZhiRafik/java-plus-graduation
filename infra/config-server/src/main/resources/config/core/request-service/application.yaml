@@ -28,6 +28,12 @@ spring:
 stats-server:
   url: http://stats-server
 
+feign:
+  client:
+    config:
+      user-service:
+        decode404: true
+
 logging:
   level:
     org.springframework.orm.jpa: INFO
