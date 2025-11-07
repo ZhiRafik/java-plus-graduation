@@ -6,13 +6,11 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.NewEventDto;
 import ru.practicum.dto.event.UpdatedEventDto;
-import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
 
@@ -28,9 +26,6 @@ public class EventController {
     public EventFullDto saveEvent(@Valid @RequestBody NewEventDto newEventDto,
                                   @PathVariable(name = "userId") Long userId,
                                   HttpServletRequest request) {
-//        if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-//            throw new InvalidEventTimeException(newEventDto.getEventDate());
-//        }
         String ip = request.getRemoteAddr();
         log.info("Получен запрос на создание события от пользователя с ID {}, IP: {}", userId, ip);
         return eventService.saveEvent(newEventDto, userId, ip);
@@ -128,11 +123,4 @@ public class EventController {
     public EventFullDto saveFullEvent(@RequestBody EventFullDto event) {
         return eventService.saveFullEvent(event);
     }
-/*
-    @GetMapping("/admin/events/{eventId}/{initiatorId}")
-    public Integer checkInitiatorEvent(@PathVariable("eventId") Long eventId,
-                                       @PathVariable("initiatorId") Long initiatorId) {
-        return eventService.checkInitiatorEvent(eventId, initiatorId);
-    }
- */
 }

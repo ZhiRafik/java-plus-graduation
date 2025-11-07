@@ -72,10 +72,4 @@ public interface EventClient {
 
     @PostMapping("/admin/events/increment")
     EventFullDto saveFullEvent(@RequestBody EventFullDto event);
-    /*
-    //@GetMapping("/admin/events/{eventId}/{initiatorId}")
-    @GetMapping("/users/{userId}/events/{eventId}")
-    /*Integer EventFullDto getEventByUserIdAndEventId(@PathVariable("eventId") Long initiatorId,
-                                @PathVariable("initiatorId") Long eventId);
-    */
 }
