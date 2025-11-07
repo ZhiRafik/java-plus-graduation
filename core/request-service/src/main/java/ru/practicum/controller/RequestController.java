@@ -42,13 +42,13 @@ public class RequestController {
 
     }
 
-    @PatchMapping("/users/{userId}/events/{eventId}/requests")
+    @PatchMapping("/users/{initiatorId}/events/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
-    public EventRequestStatusUpdateResult changeRequestStatus(@PathVariable Long userId,
+    public EventRequestStatusUpdateResult changeRequestStatus(@PathVariable Long initiatorId,
                                                               @PathVariable Long eventId,
                                                               @Valid @RequestBody EventRequestStatusUpdateRequest request) {
-        log.info("In changeRequestStatus: userid {}, eventId {}", userId, eventId);
-        EventRequestStatusUpdateResult updateResult = requestService.changeRequestStatus(userId, eventId, request);
+        log.info("In changeRequestStatus: userid {}, eventId {}", initiatorId, eventId);
+        EventRequestStatusUpdateResult updateResult = requestService.changeRequestStatus(initiatorId, eventId, request);
         log.info("Out changeRequestStatus: updateResult {}", updateResult);
         return updateResult;
     }

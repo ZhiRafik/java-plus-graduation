@@ -266,10 +266,9 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
-    public EventFullDto getEventByUserIdAndEventId(long userId, long eventId,
-                                                    Integer from, Integer size, String ip) {
-        log.debug("Получен запрос на получение события с id={} пользователя с id={} (from={}, size={}, ip={})",
-                eventId, userId, from, size, ip);
+    public EventFullDto getEventByUserIdAndEventId(long userId, long eventId, String ip) {
+        log.debug("Получен запрос на получение события с id={} пользователя с id={} (ip={})",
+                eventId, userId, ip);
 
         if (userAdminClient.getUserById(userId) == null) {
             log.warn("Пользователь с id={} не найден", userId);
@@ -343,7 +342,7 @@ public class EventServiceImpl implements EventService {
         Event foundEvent = checkAndGetEventById(event.getId());
         log.debug("Количество запросов до обновления: " + foundEvent.getConfirmedRequests());
         applyUpdateFromFull(foundEvent, event);
-        Event saved = eventRepository.save(foundEvent);
+        Event saved = eventRepository.saveAndFlush(foundEvent);
         log.debug("Количество запросов после обновления: " + saved.getConfirmedRequests());
         return eventDtoMapper.mapToFullDto(saved);
     }

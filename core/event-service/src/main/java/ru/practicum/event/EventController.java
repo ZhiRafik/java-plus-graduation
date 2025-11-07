@@ -47,7 +47,7 @@ public class EventController {
     }
 
     @PatchMapping("/admin/events/{eventId}")
-    public EventFullDto updateAdminEventByIdAndUserId(@RequestBody @Valid UpdatedEventDto updatedEventDto,
+    public EventFullDto updateAdminEventById(@RequestBody @Valid UpdatedEventDto updatedEventDto,
                                                  @PathVariable Long eventId,
                                                  HttpServletRequest request) {
         String ip = request.getRemoteAddr();
@@ -94,14 +94,12 @@ public class EventController {
     }
 
     @GetMapping("/users/{userId}/events/{eventId}")
-    public EventFullDto getEventByUserIdAndEventId(@PathVariable Long userId,
-                                                          @PathVariable Long eventId,
-                                                          HttpServletRequest request,
-                                                          @RequestParam(required = false) Integer from,
-                                                          @RequestParam(required = false) Integer size) {
+    public EventFullDto getEventByUserIdAndEventId(@PathVariable("userId") Long userId,
+                                                   @PathVariable("eventId") Long eventId,
+                                                   HttpServletRequest request) {
         String ip = request.getRemoteAddr();
-        log.info("GET /users/{}/events/{} from IP {}, from={}, size={}", userId, eventId, ip, from, size);
-        return eventService.getEventByUserIdAndEventId(userId, eventId, from, size, ip);
+        log.info("GET /users/{}/events/{} from IP {}, from={}, size={}", userId, eventId, ip);
+        return eventService.getEventByUserIdAndEventId(userId, eventId, ip);
     }
 
     @GetMapping("/admin/events")
@@ -130,10 +128,11 @@ public class EventController {
     public EventFullDto saveFullEvent(@RequestBody EventFullDto event) {
         return eventService.saveFullEvent(event);
     }
-
+/*
     @GetMapping("/admin/events/{eventId}/{initiatorId}")
     public Integer checkInitiatorEvent(@PathVariable("eventId") Long eventId,
                                        @PathVariable("initiatorId") Long initiatorId) {
         return eventService.checkInitiatorEvent(eventId, initiatorId);
     }
+ */
 }

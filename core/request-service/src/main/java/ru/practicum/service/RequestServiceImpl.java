@@ -247,9 +247,9 @@ public class RequestServiceImpl implements RequestService {
 
     private void checkInitiatorEvent(Long initiatorId, Long eventId) {
         log.debug("Проверяем пользователя с id " + initiatorId + " на владение события с id " + eventId);
-        Integer check = eventClient.checkInitiatorEvent(initiatorId, eventId);
+        EventFullDto check = eventClient.getEventByUserIdAndEventId(initiatorId, eventId,  null);
         log.debug("Результат проверки: " + check);
-        if (Objects.equals(check, Integer.valueOf(0)) || check == null || check == 0) {
+        if (check == null || !Objects.equals(check.getInitiator().getId(), initiatorId)) {
             throw new NotFoundException(
                     "У пользователя с id " + initiatorId + " не найдено событие с id " + eventId
             );

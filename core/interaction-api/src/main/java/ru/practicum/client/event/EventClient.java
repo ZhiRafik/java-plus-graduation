@@ -1,5 +1,6 @@
 package ru.practicum.client.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.MyFeignClientFallback;
@@ -52,11 +53,10 @@ public interface EventClient {
                                           @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
 
     @GetMapping("/users/{userId}/events/{eventId}")
-    EventFullDto getEventByUserIdAndEventId(@PathVariable Long userId,
-                                            @PathVariable Long eventId,
-                                            @RequestParam(required = false) Integer from,
-                                            @RequestParam(required = false) Integer size,
-                                            @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
+    EventFullDto getEventByUserIdAndEventId(@PathVariable("userId") Long userId,
+                                            @PathVariable("eventId") Long eventId,
+                                            @RequestHeader(value = "X-Forwarded-For", required = false)
+                                                        HttpServletRequest request);
 
     @GetMapping("/admin/events")
     List<EventFullDto> getAdminEvents(@RequestParam(required = false) String text,
@@ -72,8 +72,10 @@ public interface EventClient {
 
     @PostMapping("/admin/events/increment")
     EventFullDto saveFullEvent(@RequestBody EventFullDto event);
-
-    @GetMapping("/admin/events/{eventId}/{initiatorId}")
-    Integer checkInitiatorEvent(@PathVariable("eventId") Long eventId,
-                                @PathVariable("initiatorId") Long initiatorId);
+    /*
+    //@GetMapping("/admin/events/{eventId}/{initiatorId}")
+    @GetMapping("/users/{userId}/events/{eventId}")
+    /*Integer EventFullDto getEventByUserIdAndEventId(@PathVariable("eventId") Long initiatorId,
+                                @PathVariable("initiatorId") Long eventId);
+    */
 }
