@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.client.event.EventClient;
 import ru.practicum.client.user.UserAdminClient;
+import ru.practicum.StatsClient;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.enums.State;
 import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
@@ -34,6 +35,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final EventClient eventClient;
     private final UserAdminClient userAdminClient;
+    private final StatsClient statsClient;
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
@@ -81,6 +83,8 @@ public class RequestServiceImpl implements RequestService {
                         (LocalDateTime.now().getNano() / 1_000_000) * 1_000_000
                         ))
                 .build();
+
+        statsClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_REGISTER);
 
         return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
     }

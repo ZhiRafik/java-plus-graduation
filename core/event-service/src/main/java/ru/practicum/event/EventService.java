@@ -16,7 +16,7 @@ public interface EventService {
                                  String sort, Integer from, Integer size,
                                  String ip, String user);
 
-    EventFullDto getEventById(long id, String ip);
+    EventFullDto getEventById(long eventId, long userId, String ip);
 
     List<EventShortDto> getEventsByUserId(long userId, Integer from, Integer size, String ip);
 
@@ -31,4 +31,8 @@ public interface EventService {
     EventFullDto saveFullEvent(EventFullDto event);
 
     Integer checkInitiatorEvent(Long initiatorId, Long eventId);
+
+    List<EventShortDto> getRecommendations(long userId);
+
+    void likeEvent(long eventId, long userId);
 }
