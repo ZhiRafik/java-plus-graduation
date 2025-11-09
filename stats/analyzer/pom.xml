@@ -76,6 +76,12 @@
         </dependency>
 
         <dependency>
+            <groupId>net.devh</groupId>
+            <artifactId>grpc-server-spring-boot-starter</artifactId>
+        </dependency>
+
+
+        <dependency>
             <groupId>ru.yandex.practicum</groupId>
             <artifactId>avro-schemas</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -128,7 +134,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>ru.yandex.practicum.telemetry.analyzer.AnalyzerApplication</mainClass>
+                    <mainClass>ru.practicum.analyzer.AnalyzerApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

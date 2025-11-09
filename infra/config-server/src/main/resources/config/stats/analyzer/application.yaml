@@ -1,5 +1,8 @@
 server:
   port: 0
+grpc:
+  server:
+    port: 0
 spring:
   sql:
     init:
@@ -21,10 +24,18 @@ spring:
     format:
       date-time: yyyy-MM-dd HH:mm:ss
   datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/statistics
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:6541/statistics
     username: statistics
     password: statistics
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      user-action:
+        group-id: analyzer-consumer-user-action-group
+      event-similarity:
+        group-id: analyzer-consumer-event-similarity-group
+
 logging:
   pattern:
     console: "[%X{requestId}] %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"

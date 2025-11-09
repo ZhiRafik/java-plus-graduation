@@ -1,30 +1,22 @@
 server:
   port: 0
+grpc:
+  server:
+    port: 0
 spring:
-  sql:
-    init:
-      mode: always
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          time_zone: Europe/Moscow
-        show_sql: true
-    properties.hibernate.type.descriptor.sql: TRACE
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: aggregator-consumer-group
   jackson:
     time-zone: Europe/Moscow
   mvc:
     format:
       date-time: yyyy-MM-dd HH:mm:ss
-  datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/statistics
-    username: statistics
-    password: statistics
+kafka:
+  topics:
+    user-actions: stats.user-actions.v1
+    events-similarity: stats.events-similarity.v1
 logging:
   pattern:
     console: "[%X{requestId}] %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"

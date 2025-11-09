@@ -88,6 +88,7 @@
 				<version>${springdoc-openapi-starter.version}</version>
 			</dependency>
 
+			<!-- gRPC -->
 			<dependency>
 				<groupId>io.grpc</groupId>
 				<artifactId>grpc-protobuf</artifactId>
@@ -111,32 +112,6 @@
 				<artifactId>grpc-server-spring-boot-starter</artifactId>
 				<version>3.1.0.RELEASE</version>
 			</dependency>
-
-			<!--    GRPC dependencies management     -->
-			<dependency>
-				<groupId>net.devh</groupId>
-				<artifactId>grpc-spring-boot-starter</artifactId>
-				<version>${grpc-spring-boot-starter.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>net.devh</groupId>
-				<artifactId>grpc-server-spring-boot-starter</artifactId>
-				<version>${grpc-spring-boot-starter.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.grpc</groupId>
-				<artifactId>grpc-stub</artifactId>
-				<version>${grpc.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.grpc</groupId>
-				<artifactId>grpc-protobuf</artifactId>
-				<version>${grpc.version}</version>
-			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 
