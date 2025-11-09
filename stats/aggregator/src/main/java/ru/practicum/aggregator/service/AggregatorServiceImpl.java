@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.aggregator.config.ActionWeights;
 import ru.practicum.ewm.stats.avro.ActionTypeAvro;
-import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
+import ru.practicum.ewm.stats.avro.EventsSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 
 import java.time.Instant;
@@ -17,7 +17,7 @@ public class AggregatorServiceImpl {
     private final Map<Long, Double> eventSumWeight = new HashMap<>();
     private final Map<Long, Map<Long, Double>> eventSumMinWeight = new HashMap<>();
 
-    public List<EventSimilarityAvro> updateSimilarity(UserActionAvro userActionAvro) {
+    public List<EventsSimilarityAvro> updateSimilarity(UserActionAvro userActionAvro) {
         Long userId = userActionAvro.getUserId();
         Long eventId = userActionAvro.getEventId();
         ActionTypeAvro actionType = userActionAvro.getActionType();
@@ -30,7 +30,7 @@ public class AggregatorServiceImpl {
             log.debug("updateSimilarity: текущее значение веса {}, новое значение веса {}", currentWeight, weight);
             userWeight.put(userId, weight); // обновляем вес
             eventSumWeightUpdate(eventId);
-            List<EventSimilarityAvro> eventSimilarityAvroList
+            List<EventsSimilarityAvro> eventSimilarityAvroList
                     = eventSumMinWeightUpdate(eventId, userId, weight, currentWeight, timestamp);
 
             return eventSimilarityAvroList;
@@ -40,9 +40,9 @@ public class AggregatorServiceImpl {
         }
     }
 
-    private List<EventSimilarityAvro> eventSumMinWeightUpdate(Long eventId, Long userId, Double newWeight,
+    private List<EventsSimilarityAvro> eventSumMinWeightUpdate(Long eventId, Long userId, Double newWeight,
                                                               Double oldWeight, Instant timestamp) {
-        List<EventSimilarityAvro> eventSimilarityAvroList = new ArrayList<>();
+        List<EventsSimilarityAvro> eventSimilarityAvroList = new ArrayList<>();
 
         for (Long otherEventId : eventUserWeight.keySet()) { // проходимся по всем Event
             if (otherEventId.equals(eventId)) {
@@ -73,14 +73,14 @@ public class AggregatorServiceImpl {
             double sumB = eventSumWeight.get(maxId);
             double score = sumMin / Math.sqrt(sumA * sumB);
 
-            EventSimilarityAvro.Builder builder = EventSimilarityAvro.newBuilder()
+            EventsSimilarityAvro.Builder builder = EventsSimilarityAvro.newBuilder()
                     .setEventA(minId)
                     .setEventB(maxId)
                     .setScore(score)
                     .setTimestamp(timestamp);
-            EventSimilarityAvro eventSimilarityAvro = builder.build();
-            eventSimilarityAvroList.add(eventSimilarityAvro);
-            log.debug("eventSumMinWeightUpdate: Avro-сообщение {}", eventSimilarityAvro);
+            EventsSimilarityAvro EventsSimilarityAvro = builder.build();
+            eventSimilarityAvroList.add(EventsSimilarityAvro);
+            log.debug("eventSumMinWeightUpdate: Avro-сообщение {}", EventsSimilarityAvro);
         }
 
         return eventSimilarityAvroList;

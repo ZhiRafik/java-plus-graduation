@@ -9,11 +9,11 @@ import ru.practicum.analyzer.model.UserAction;
 import ru.practicum.analyzer.repository.EventSimilarityRepository;
 import ru.practicum.analyzer.repository.UserActionRepository;
 import ru.practicum.analyzer.config.ActionWeights;
-import ru.yandex.practicum.grpc.stats.dashboard.RecommendationsControllerGrpc;
-import ru.yandex.practicum.grpc.stats.recommendation.InteractionsCountRequestProto;
-import ru.yandex.practicum.grpc.stats.recommendation.RecommendedEventProto;
-import ru.yandex.practicum.grpc.stats.recommendation.SimilarEventsRequestProto;
-import ru.yandex.practicum.grpc.stats.recommendation.UserPredictionsRequestProto;
+import ru.yandex.practicum.ewm.stats.proto.RecommendationsControllerGrpc;
+import ru.yandex.practicum.ewm.stats.proto.InteractionsCountRequestProto;
+import ru.yandex.practicum.ewm.stats.proto.RecommendedEventProto;
+import ru.yandex.practicum.ewm.stats.proto.SimilarEventsRequestProto;
+import ru.yandex.practicum.ewm.stats.proto.UserPredictionsRequestProto;
 
 import java.util.*;
 import java.util.stream.Collectors;

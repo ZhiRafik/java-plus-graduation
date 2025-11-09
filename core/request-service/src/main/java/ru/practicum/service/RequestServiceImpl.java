@@ -22,6 +22,7 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.RequestMapper;
 import ru.practicum.model.Request;
 import ru.practicum.repository.RequestRepository;
+import ru.yandex.practicum.ewm.stats.proto.ActionTypeProto;
 
 import java.time.LocalDateTime;
 import java.util.List;

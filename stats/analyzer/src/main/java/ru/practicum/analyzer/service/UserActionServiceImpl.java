@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.analyzer.config.ActionWeights;
 import ru.practicum.analyzer.mapper.UniversalMapper;
 import ru.practicum.analyzer.model.UserAction;
+import ru.practicum.ewm.stats.avro.UserActionAvro;
 import ru.practicum.analyzer.repository.UserActionRepository;
 
 @Slf4j

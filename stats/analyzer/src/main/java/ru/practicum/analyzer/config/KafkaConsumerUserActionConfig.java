@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import ru.practicum.kafka.deserialazer.UserActionDeserializer;
+import ru.yandex.practicum.kafka.deserializer.UserActionDeserializer;
 
 import java.util.Properties;
 

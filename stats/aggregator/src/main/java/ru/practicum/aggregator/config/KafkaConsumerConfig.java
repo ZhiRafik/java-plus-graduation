@@ -8,7 +8,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer;
+import ru.yandex.practicum.kafka.deserializer.UserActionDeserializer;
 
 import java.util.Properties;
 
@@ -25,7 +25,7 @@ public class KafkaConsumerConfig {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, UserActionDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
         return new KafkaConsumer<>(props);

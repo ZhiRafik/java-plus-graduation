@@ -20,8 +20,8 @@ import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConditionsNotMetException;
 import ru.practicum.exception.ConflictPropertyConstraintException;
 import ru.practicum.exception.NotFoundException;
-import ru.yandex.practicum.grpc.stats.action.ActionTypeProto;
-import ru.yandex.practicum.grpc.stats.recommendation.RecommendedEventProto;
+import ru.yandex.practicum.ewm.stats.proto.ActionTypeProto;
+import ru.yandex.practicum.ewm.stats.proto.RecommendedEventProto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

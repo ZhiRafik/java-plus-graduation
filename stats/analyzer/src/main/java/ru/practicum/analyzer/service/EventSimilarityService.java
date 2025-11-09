@@ -1,8 +1,8 @@
 package ru.practicum.analyzer.service;
 
 import ru.practicum.analyzer.model.EventSimilarity;
-import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
+import ru.practicum.ewm.stats.avro.EventsSimilarityAvro;
 
 public interface EventSimilarityService {
-    EventSimilarity processEventSimilarity(EventSimilarityAvro eventSimilarityAvro);
+    EventSimilarity processEventSimilarity(EventsSimilarityAvro eventSimilarityAvro);
 }

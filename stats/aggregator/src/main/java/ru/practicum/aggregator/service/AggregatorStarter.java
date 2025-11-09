@@ -9,7 +9,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
+import ru.practicum.ewm.stats.avro.EventsSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 
 import java.time.Duration;
@@ -25,7 +25,7 @@ public class AggregatorStarter implements Runnable {
     @Value("${kafka.topics.user-actions}")
     private String userActionsTopic;
     @Value("${kafka.topics.events-similarity}")
-    private String eventSimilarityTopic;
+    private String eventsSimilarityTopic;
 
     private volatile boolean running = true;
 
@@ -33,7 +33,7 @@ public class AggregatorStarter implements Runnable {
     public void run() {
         try {
             Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
-            consumer.subscribe(List.of(sensorTopic));
+            consumer.subscribe(List.of(userActionsTopic));
             log.info("Подписка на топик " + userActionsTopic);
 
             while (running) {
@@ -49,10 +49,10 @@ public class AggregatorStarter implements Runnable {
                         continue;
                     }
 
-                    List<EventSimilarityAvro> eventSimilarity = aggregatorService.updateSimilarity(userActionAvro);
+                    List<EventsSimilarityAvro> eventSimilarity = aggregatorService.updateSimilarity(userActionAvro);
                     eventSimilarity.forEach( similarity -> {
                                 try {
-                                    producer.send(new ProducerRecord<>(topicEventsSimilarity, similarity));
+                                    producer.send(new ProducerRecord<>(eventsSimilarityTopic, similarity));
                                     log.info("Обновлено  сходство {} для события: {}", similarity, similarity.getEventA());
                                 } catch (Exception e) {
                                     log.error("Ошибка при отправке в кафка", e);

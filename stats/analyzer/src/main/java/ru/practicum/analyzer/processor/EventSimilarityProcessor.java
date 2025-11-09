@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
 import ru.practicum.analyzer.service.EventSimilarityService;
-import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
+import ru.practicum.ewm.stats.avro.EventsSimilarityAvro;
 import ru.practicum.analyzer.model.EventSimilarity;
 
 import java.time.Duration;
@@ -41,7 +41,7 @@ public class EventSimilarityProcessor implements Runnable {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(100));
 
                 for(ConsumerRecord<String, SpecificRecordBase> record : records) {
-                    if(!(record.value() instanceof EventSimilarityAvro eventSimilarityAvro)) {
+                    if(!(record.value() instanceof EventsSimilarityAvro eventSimilarityAvro)) {
                         log.warn("Неожиданный тип записи: {}", record.value().getClass().getSimpleName());
                         continue;
                     }

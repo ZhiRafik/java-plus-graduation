@@ -3,8 +3,8 @@ package ru.practicum.collector.grpc;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
-import ru.practicum.service.kafka.KafkaService;
-import ru.yandex.practicum.grpc.stats.action.UserActionProto;
+import ru.practicum.collector.kafka.KafkaService;
+import ru.yandex.practicum.ewm.stats.proto.UserActionProto;
 
 @Service
 @RequiredArgsConstructor

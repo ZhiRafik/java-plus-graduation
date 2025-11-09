@@ -1,6 +1,6 @@
 @namespace("ru.practicum.ewm.stats.avro")
-protocol EventSimilarity {
-	record EventSimilarityAvro {
+protocol EventsSimilarity {
+	record EventsSimilarityAvro {
 		long eventA;
 		long eventB;
 		double score;
