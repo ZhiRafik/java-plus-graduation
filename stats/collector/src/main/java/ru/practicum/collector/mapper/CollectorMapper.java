@@ -2,8 +2,8 @@ package ru.practicum.collector.mapper;
 
 import ru.practicum.ewm.stats.avro.ActionTypeAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
-import ru.yandex.practicum.grpc.stats.action.ActionTypeProto;
-import ru.yandex.practicum.grpc.stats.action.UserActionProto;
+import ru.yandex.practicum.ewm.stats.proto.ActionTypeProto;
+import ru.yandex.practicum.ewm.stats.proto.UserActionProto;
 
 import java.time.Instant;
 
