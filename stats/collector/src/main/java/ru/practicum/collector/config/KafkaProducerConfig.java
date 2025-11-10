@@ -8,7 +8,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer;
+import ru.practicum.kafka.serializer.GeneralAvroSerializer;
 
 import java.util.Properties;
 

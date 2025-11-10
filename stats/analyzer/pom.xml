@@ -10,7 +10,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <groupId>ru.yandex.practicum</groupId>
+    <groupId>ru.practicum</groupId>
     <artifactId>analyzer</artifactId>
     <packaging>jar</packaging>
 
@@ -82,13 +82,13 @@
 
 
         <dependency>
-            <groupId>ru.yandex.practicum</groupId>
+            <groupId>ru.practicum</groupId>
             <artifactId>avro-schemas</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>ru.yandex.practicum</groupId>
+            <groupId>ru.practicum</groupId>
             <artifactId>proto-schemas</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

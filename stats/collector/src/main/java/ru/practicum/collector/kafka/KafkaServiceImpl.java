@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import ru.practicum.ewm.stats.avro.UserActionAvro;
-import ru.practicum.utils.CollectorMapper;
-import ru.yandex.practicum.grpc.stats.action.UserActionProto;
+import ru.practicum.collector.mapper.CollectorMapper;
+import ru.yandex.practicum.ewm.stats.proto.UserActionProto;
 
 @Service
 @RequiredArgsConstructor

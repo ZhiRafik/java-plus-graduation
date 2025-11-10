@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kafka.deserializer;
+package ru.practicum.kafka.deserializer;
 
 import ru.practicum.ewm.stats.avro.EventsSimilarityAvro;
 

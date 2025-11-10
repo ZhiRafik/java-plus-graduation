@@ -8,8 +8,8 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import lombok.RequiredArgsConstructor;
 import java.time.Instant;
 
-import ru.practicum.service.grpc.GrpcUserActionService;
-import ru.yandex.practicum.grpc.stats.action.UserActionProto;
+import ru.practicum.collector.grpc.GrpcUserActionService;
+import ru.yandex.practicum.ewm.stats.proto.UserActionProto;
 import ru.yandex.practicum.grpc.stats.collector.UserActionControllerGrpc;
 
 @GrpcService
