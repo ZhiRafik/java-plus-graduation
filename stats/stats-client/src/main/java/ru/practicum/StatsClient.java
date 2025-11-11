@@ -1,6 +1,7 @@
 package ru.practicum;
 
 import com.google.protobuf.Timestamp;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.ewm.stats.proto.ActionTypeProto;
@@ -17,6 +18,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+@Slf4j
 @Service
 public class StatsClient {
 
@@ -62,14 +64,18 @@ public class StatsClient {
     }
 
     public void sendUserAction (long userId, long eventId, ActionTypeProto actionType) {
+        log.debug("Получили запрос на отправку статистики от userId " + userId +
+                ", строим запрос по eventId " + eventId);
         UserActionProto request = UserActionProto.newBuilder()
                 .setEventId(eventId)
                 .setUserId(userId)
                 .setTimestamp(getCurrentTimestamp())
                 .setActionType(actionType)
                 .build();
-
+        log.debug("Построили запрос");
+        log.debug("Отправляем запрос");
         collector.collectUserAction(request);
+        log.debug("Отправили запрос");
     }
 
     private Timestamp getCurrentTimestamp() {

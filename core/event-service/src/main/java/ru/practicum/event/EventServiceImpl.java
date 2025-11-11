@@ -38,7 +38,7 @@ public class EventServiceImpl implements EventService {
     private final EventDtoMapper eventDtoMapper;
     private final UserAdminClient userAdminClient;
 
-    public EventFullDto saveEvent(NewEventDto newEventDto, long userId, String ip) {
+    public EventFullDto saveEvent(NewEventDto newEventDto, long userId) {
         log.debug("Попытка сохранить новое событие: {}", newEventDto);
 
         checkUserId(userId);
@@ -62,8 +62,8 @@ public class EventServiceImpl implements EventService {
     }
 
     public EventFullDto updateEvent(UpdatedEventDto updatedEvent,
-                                    long userId, long eventId, String ip) {
-        log.info("Попытка обновить событие. userId={}, eventId={}, ip={}", userId, eventId, ip);
+                                    long userId, long eventId) {
+        log.info("Попытка обновить событие. userId={}, eventId={}", userId, eventId);
 
         checkUserId(userId);
 
@@ -92,8 +92,8 @@ public class EventServiceImpl implements EventService {
     }
 
     public EventFullDto updateAdminEvent(UpdatedEventDto updatedEvent,
-                                         long eventId, String ip) {
-        log.info("Админ запрашивает обновление события. eventId={}, ip={}", eventId, ip);
+                                         long eventId) {
+        log.info("Админ запрашивает обновление события. eventId={}", eventId);
 
         Event event = checkAndGetEventById(eventId);
 
@@ -128,9 +128,9 @@ public class EventServiceImpl implements EventService {
 
     public List<EventFullDto> getEvents(String text, List<Long> categories, Boolean paid,
                                         String rangeStart, String rangeEnd, Boolean onlyAvailable,
-                                        String sort, Integer from, Integer size, String ip, String user) {
-        log.info("Получен запрос на получение событий. Пользователь: {}, IP: {}, параметры: [text: {}, categories: {}, paid: {}, rangeStart: {}, rangeEnd: {}, onlyAvailable: {}, sort: {}, from: {}, size: {}]",
-                user, ip, text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+                                        String sort, Integer from, Integer size, String user) {
+        log.info("Получен запрос на получение событий. Пользователь: {}, параметры: [text: {}, categories: {}, paid: {}, rangeStart: {}, rangeEnd: {}, onlyAvailable: {}, sort: {}, from: {}, size: {}]",
+                user, text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -197,8 +197,8 @@ public class EventServiceImpl implements EventService {
         return eventsWithViews;
     }
 
-    public List<EventShortDto> getEventsByUserId(long userId, Integer from, Integer size, String ip) {
-        log.debug("Получен запрос на получение событий пользователя с id={} (from={}, size={}, ip={})", userId, from, size, ip);
+    public List<EventShortDto> getEventsByUserId(long userId, Integer from, Integer size) {
+        log.debug("Получен запрос на получение событий пользователя с id={} (from={}, size={})", userId, from, size);
 
         log.debug("Проверка существования пользователя с id={}", userId);
         if (userAdminClient.getUserById(userId) == null) {
@@ -227,9 +227,9 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
-    public EventFullDto getEventByUserIdAndEventId(long userId, long eventId, String ip) {
-        log.debug("Получен запрос на получение события с id={} пользователя с id={} (ip={})",
-                eventId, userId, ip);
+    public EventFullDto getEventByUserIdAndEventId(long userId, long eventId) {
+        log.debug("Получен запрос на получение события с id={} пользователя с id={}",
+                eventId, userId);
 
         if (userAdminClient.getUserById(userId) == null) {
             log.warn("Пользователь с id={} не найден", userId);
@@ -247,8 +247,8 @@ public class EventServiceImpl implements EventService {
     }
 
 
-    public EventFullDto getEventById(long eventId, long userId, String ip) {
-        log.debug("Получен запрос на получение события с id={} от ip={}", eventId, ip);
+    public EventFullDto getEventById(long eventId, long userId) {
+        log.debug("Получен запрос на получение события с eventId={} от userId={}", eventId, userId);
 
         Optional<Event> eventOpt = eventRepository.findById(eventId);
         if (eventOpt.isEmpty()) {
@@ -268,7 +268,10 @@ public class EventServiceImpl implements EventService {
         double rating = eventRating.getOrDefault(event.getId(), 0.0);
         dto.setRating(rating);
 
-        statsClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_VIEW);
+        log.debug("Отправляем статистику по просмотру события с eventId " + eventId
+                + " пользователем с userId " + userId);
+        statsClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_VIEW); // <--- ОЧЕНЬ ДОЛГО ВИСНЕТ
+        log.debug("Отправили статистику");
 
         log.debug("Рейтинг события с id={}: {}", eventId, rating);
         return dto;
@@ -277,10 +280,12 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getRecommendations(long userId) {
         checkUserId(userId);
         UserShortDto userShortDto = userAdminClient.getUserShortById(userId);
+        log.debug("Спрашиваем statsClient о рекомендациях для пользователя");
         Map<Long, Double> eventRating  = statsClient.getRecommendationsForUser(userId, 10)
                 .collect(
                         Collectors.toMap(RecommendedEventProto::getEventId, RecommendedEventProto::getScore)
                 );
+        log.debug("Получили рекомендации для пользователя");
         List<Event> events =  eventRepository.findByIdIn(eventRating.keySet()).stream()
                 .map(event -> {
                     double rating = eventRating.getOrDefault(event.getId(), 0.0);
@@ -317,7 +322,9 @@ public class EventServiceImpl implements EventService {
     public void likeEvent(long eventId, long userId) {
         checkAndGetEventById(eventId);
         checkUserId(userId);
+        log.debug("Отправляем статистику о действии пользователя с userId " + userId);
         statsClient.sendUserAction(eventId, userId, ActionTypeProto.ACTION_LIKE);
+        log.debug("Отправляем статистику о действии пользователя");
     }
 
     private void applyUpdateFromFull(Event event, EventFullDto dto) {
@@ -437,6 +444,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void checkUserId(long userId) {
+        log.debug("Отправляем в userClient вопрос о существовании пользователя с userId " + userId);
         if (userAdminClient.getUserById(userId) == null) {
             log.warn("Пользователь с id {} не найден", userId);
             throw new NotFoundException("Пользователь с id " + userId + " не найден");
@@ -444,6 +452,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void checkCategoryId(long catId) {
+        log.debug("Отправляем в userClient вопрос о существовании категории с catId " + catId);
         if (categoryRepository.findById(catId).isEmpty()) {
             log.warn("Категория с id {} не найдена", catId);
             throw new NotFoundException("Категория с id " + catId + " не найдена");
@@ -452,7 +461,7 @@ public class EventServiceImpl implements EventService {
 
     private Map<Long, Category> getCategoryMap(List<Event> userEvents) {
         Map<Long, Category> eventCategory = new HashMap<>();
-
+        log.debug("Ищем категории");
         List<Long> categoryIds = userEvents.stream().map(Event::getCategory).toList();
 
         Map<Long, Category> categories = categoryRepository.findByIdIn(categoryIds).stream()
@@ -460,10 +469,12 @@ public class EventServiceImpl implements EventService {
         for (Event event : userEvents) {
             eventCategory.put(event.getId(), categories.get(event.getCategory()));
         }
+        log.debug("Нашли категории");
         return eventCategory;
     }
 
     private Event checkAndGetEventById(long eventId) {
+        log.debug("Ищем событие с eventId " + eventId);
         Optional<Event> eventOpt = eventRepository.findById(eventId);
         if (eventOpt.isEmpty()) {
             log.warn("Событие с id {} не найдено", eventId);

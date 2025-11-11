@@ -48,8 +48,11 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto addUserRequest(Long userId, Long eventId) {
+        log.debug("Запрос дошёл до сервиса");
         UserDto user = findUser(userId);
-        EventFullDto event = findEvent(eventId);
+        log.debug("Найден пользователь");
+        EventFullDto event = findEvent(eventId, userId);
+        log.debug("Найдено событие");
         requestRepository.findByRequesterIdAndEventId(userId, eventId).ifPresent(
                 request -> {
                     throw new ConflictPropertyConstraintException("Нельзя добавить повторный запрос");
@@ -71,9 +74,13 @@ public class RequestServiceImpl implements RequestService {
         }
 
         Status status = Status.PENDING;
+        log.debug("Установлен статус PENDING");
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            log.debug("Установлен статус CONFIRMED");
             status = Status.CONFIRMED;
+            log.debug("Вызван метод addConfirmedRequestToEvent");
             addConfirmedRequestToEvent(event);
+            log.debug("Прошёл метод addConfirmedRequestToEvent");
         }
 
         Request request = Request.builder()
@@ -84,8 +91,9 @@ public class RequestServiceImpl implements RequestService {
                         (LocalDateTime.now().getNano() / 1_000_000) * 1_000_000
                         ))
                 .build();
-
+        log.debug("Отправляем статистику в statsClient");
         statsClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_REGISTER);
+        log.debug("Статистика отправилась");
 
         return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
     }
@@ -111,7 +119,7 @@ public class RequestServiceImpl implements RequestService {
         findUser(initiatorId);
         log.debug("Пользователь с id={} найден", initiatorId);
 
-        EventFullDto event = findEvent(eventId);
+        EventFullDto event = findEvent(eventId, initiatorId);
         log.debug("Найдено событие: id={}, подтверждено участников={}, лимит участников={}",
                 eventId, event.getConfirmedRequests(), event.getParticipantLimit());
 
@@ -237,9 +245,9 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    private EventFullDto findEvent(Long eventId) {
+    private EventFullDto findEvent(Long eventId, Long userId) {
         try {
-            return eventClient.getEventById(eventId, "requestService");
+            return eventClient.getEventById(eventId, userId);
         } catch (FeignException.NotFound e) {
             throw new ConflictException("Нельзя подать заявку: событие с id " + eventId + " не опубликовано");
         }
@@ -252,7 +260,7 @@ public class RequestServiceImpl implements RequestService {
 
     private void checkInitiatorEvent(Long initiatorId, Long eventId) {
         log.debug("Проверяем пользователя с id " + initiatorId + " на владение события с id " + eventId);
-        EventFullDto check = eventClient.getEventByUserIdAndEventId(initiatorId, eventId,  null);
+        EventFullDto check = eventClient.getEventByUserIdAndEventId(initiatorId, eventId);
         log.debug("Результат проверки: " + check);
         if (check == null || !Objects.equals(check.getInitiator().getId(), initiatorId)) {
             throw new NotFoundException(

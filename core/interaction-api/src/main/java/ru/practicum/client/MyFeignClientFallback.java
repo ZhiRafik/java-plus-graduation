@@ -3,9 +3,7 @@ package ru.practicum.client;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.category.AdminCategoryClient;
 import ru.practicum.client.category.PublicCategoryClient;
 import ru.practicum.client.comment.CommentAdminClient;
@@ -105,7 +103,7 @@ public class MyFeignClientFallback implements UserAdminClient, RequestClient, Ev
 
     // === EventClient ===
     @Override
-    public EventFullDto saveEvent(NewEventDto newEventDto, Long userId, String ip) {
+    public EventFullDto saveEvent(NewEventDto newEventDto, Long userId) {
         throw new RuntimeException("Сервис event-service временно недоступен (saveEvent)");
     }
 
@@ -115,39 +113,44 @@ public class MyFeignClientFallback implements UserAdminClient, RequestClient, Ev
     }
 
     @Override
-    public EventFullDto updateEventByIdAndUserId(UpdatedEventDto updatedEventDto, Long userId, Long eventId, String ip) {
+    public EventFullDto updateEventByIdAndUserId(UpdatedEventDto updatedEventDto, Long userId, Long eventId) {
         throw new RuntimeException("Сервис event-service временно недоступен (updateEventByIdAndUserId)");
     }
 
     @Override
-    public EventFullDto updateAdminEventByIdAndUserId(UpdatedEventDto updatedEventDto, Long eventId, String ip) {
+    public EventFullDto updateAdminEventByIdAndUserId(UpdatedEventDto updatedEventDto, Long eventId) {
         throw new RuntimeException("Сервис event-service временно недоступен (updateAdminEventByIdAndUserId)");
     }
 
     @Override
-    public EventFullDto getEventById(Long id, String ip) {
+    public EventFullDto getEventById(Long eventId, Long userId) {
         throw new RuntimeException("Сервис event-service временно недоступен (getEventById)");
     }
 
     @Override
+    public List<EventShortDto> getRecommendations(Long userId) {
+        throw new RuntimeException("Сервис event-service временно недоступен (getRecommendations)");
+    }
+
+    @Override
     public List<EventFullDto> getEvents(String text, List<Long> categories, Boolean paid, Boolean onlyAvailable,
-                                        String rangeStart, String rangeEnd, String sort, Integer from, Integer size, String ip) {
+                                        String rangeStart, String rangeEnd, String sort, Integer from, Integer size) {
         throw new RuntimeException("Сервис event-service временно недоступен (getEvents)");
     }
 
     @Override
-    public List<EventShortDto> getEventsByUserId(Long userId, Integer from, Integer size, String ip) {
+    public List<EventShortDto> getEventsByUserId(Long userId, Integer from, Integer size) {
         throw new RuntimeException("Сервис event-service временно недоступен (getEventsByUserId)");
     }
 
     @Override
-    public EventFullDto getEventByUserIdAndEventId(Long userId, Long eventId, HttpServletRequest request) {
+    public EventFullDto getEventByUserIdAndEventId(Long userId, Long eventId) {
         throw new RuntimeException("Сервис event-service временно недоступен (getEventByUserIdAndEventId)");
     }
 
     @Override
     public List<EventFullDto> getAdminEvents(String text, List<Long> categories, Boolean paid, Boolean onlyAvailable,
-                                             String rangeStart, String rangeEnd, String sort, Integer from, Integer size, String ip) {
+                                             String rangeStart, String rangeEnd, String sort, Integer from, Integer size) {
         throw new RuntimeException("Сервис event-service временно недоступен (getAdminEvents)");
     }
 

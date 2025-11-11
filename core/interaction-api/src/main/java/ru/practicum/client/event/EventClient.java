@@ -1,6 +1,5 @@
 package ru.practicum.client.event;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.MyFeignClientFallback;
@@ -16,23 +15,22 @@ public interface EventClient {
 
     @PostMapping("/users/{userId}/events")
     EventFullDto saveEvent(@RequestBody NewEventDto newEventDto,
-                           @PathVariable Long userId,
-                           @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
+                           @PathVariable Long userId);
 
     @PatchMapping("/users/{userId}/events/{eventId}")
     EventFullDto updateEventByIdAndUserId(@RequestBody UpdatedEventDto updatedEventDto,
                                           @PathVariable Long userId,
-                                          @PathVariable Long eventId,
-                                          @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
+                                          @PathVariable Long eventId);
 
     @PatchMapping("/admin/events/{eventId}")
     EventFullDto updateAdminEventByIdAndUserId(@RequestBody UpdatedEventDto updatedEventDto,
-                                               @PathVariable Long eventId,
-                                               @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
+                                               @PathVariable Long eventId);
 
-    @GetMapping("/events/{id}")
-    EventFullDto getEventById(@PathVariable Long id,
-                              @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
+    @GetMapping("/events/{eventId}")
+    EventFullDto getEventById(@PathVariable Long eventId, @RequestHeader("X-EWM-USER-ID") Long userId);
+
+    @GetMapping("/events/recommendations")
+    List<EventShortDto> getRecommendations(@RequestHeader("X-EWM-USER-ID") Long userId);
 
     @GetMapping("/events")
     List<EventFullDto> getEvents(@RequestParam(required = false) String text,
@@ -43,20 +41,16 @@ public interface EventClient {
                                  @RequestParam(required = false) String rangeEnd,
                                  @RequestParam(required = false) String sort,
                                  @RequestParam(defaultValue = "0") Integer from,
-                                 @RequestParam(defaultValue = "10") Integer size,
-                                 @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
+                                 @RequestParam(defaultValue = "10") Integer size);
 
     @GetMapping("/users/{userId}/events")
     List<EventShortDto> getEventsByUserId(@PathVariable Long userId,
                                           @RequestParam(required = false) Integer from,
-                                          @RequestParam(required = false) Integer size,
-                                          @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
+                                          @RequestParam(required = false) Integer size);
 
     @GetMapping("/users/{userId}/events/{eventId}")
     EventFullDto getEventByUserIdAndEventId(@PathVariable("userId") Long userId,
-                                            @PathVariable("eventId") Long eventId,
-                                            @RequestHeader(value = "X-Forwarded-For", required = false)
-                                                        HttpServletRequest request);
+                                            @PathVariable("eventId") Long eventId);
 
     @GetMapping("/admin/events")
     List<EventFullDto> getAdminEvents(@RequestParam(required = false) String text,
@@ -67,8 +61,7 @@ public interface EventClient {
                                       @RequestParam(required = false) String rangeEnd,
                                       @RequestParam(required = false) String sort,
                                       @RequestParam(defaultValue = "0") Integer from,
-                                      @RequestParam(defaultValue = "10") Integer size,
-                                      @RequestHeader(value = "X-Forwarded-For", required = false) String ip);
+                                      @RequestParam(defaultValue = "10") Integer size);
 
     @PostMapping("/admin/events/increment")
     EventFullDto saveFullEvent(@RequestBody EventFullDto event);

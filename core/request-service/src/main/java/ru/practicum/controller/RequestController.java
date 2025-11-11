@@ -30,6 +30,7 @@ public class RequestController {
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addUserRequest(@PathVariable Long userId,
                                                   @RequestParam Long eventId) {
+        log.debug("Получили запрос на добавление запроса пользователя с userId " + userId);
         return requestService.addUserRequest(userId, eventId);
     }
 
