@@ -277,7 +277,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getRecommendations(long userId) {
         checkUserId(userId);
         UserShortDto userShortDto = userAdminClient.getUserShortById(userId);
-        Map<Long, Double> eventRating  = statsClient.getGetRecommendationsForUser(userId, 10)
+        Map<Long, Double> eventRating  = statsClient.getRecommendationsForUser(userId, 10)
                 .collect(
                         Collectors.toMap(RecommendedEventProto::getEventId, RecommendedEventProto::getScore)
                 );
@@ -473,14 +473,17 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<Long, Double> getEventRating(List<Event> events) {
+        log.debug("Ищем id для событий для поиска рейтинга");
         List<Long> eventIds = events.stream()
                 .map(Event::getId)
                 .toList();
-
-        return statsClient.getGetInteractionsCount(eventIds)
+        log.debug("Нашли id для событий, ищем рейтинг");
+        Map<Long, Double> res = statsClient.getInteractionsCount(eventIds)
                 .collect(Collectors.toMap(
                         RecommendedEventProto::getEventId,
                         RecommendedEventProto::getScore
                 ));
+        log.debug("Нашли рейтинг");
+        return res;
     }
 }

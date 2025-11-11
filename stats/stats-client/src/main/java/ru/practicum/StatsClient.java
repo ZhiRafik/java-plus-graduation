@@ -37,7 +37,7 @@ public class StatsClient {
         return asStream(iterator);
     }
 
-    public Stream<RecommendedEventProto> getGetInteractionsCount (List<Long> eventId) {
+    public Stream<RecommendedEventProto> getInteractionsCount (List<Long> eventId) {
         InteractionsCountRequestProto request = InteractionsCountRequestProto.newBuilder()
                 .addAllEventId(eventId)
                 .build();
@@ -46,7 +46,7 @@ public class StatsClient {
         return asStream(iterator);
     }
 
-    public Stream<RecommendedEventProto> getGetRecommendationsForUser(long userId, int maxResults) {
+    public Stream<RecommendedEventProto> getRecommendationsForUser(long userId, int maxResults) {
         UserPredictionsRequestProto request = UserPredictionsRequestProto.newBuilder()
                 .setUserId(userId)
                 .setMaxResults(maxResults)

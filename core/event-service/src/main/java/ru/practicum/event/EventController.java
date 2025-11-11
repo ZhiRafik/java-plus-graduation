@@ -31,8 +31,8 @@ public class EventController {
         return eventService.saveEvent(newEventDto, userId, ip);
     }
 
-    @PostMapping("/users/{userId}/requests")
-    public void likeEvent(Long eventId, Long userId) {
+    @PutMapping("/events/{eventId}/like")
+    public void likeEvent(@PathVariable Long eventId, @RequestHeader("X-EWM-USER-ID") Long userId) {
         log.info("GET /events/{}/like/ for user {}", eventId, userId);
         eventService.likeEvent(eventId, userId);
     }
@@ -56,8 +56,8 @@ public class EventController {
         return eventService.updateAdminEvent(updatedEventDto, eventId, ip);
     }
 
-    @GetMapping("/events/{id}")
-    public EventFullDto getEventById(@PathVariable Long eventId, @RequestHeader("X-EWM-USER-ID") long userId,
+    @GetMapping("/events/{eventId}")
+    public EventFullDto getEventById(@PathVariable Long eventId, @RequestHeader("X-EWM-USER-ID") Long userId,
                                      HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         log.info("GET /events/{} from IP {}", eventId, ip);
@@ -127,7 +127,7 @@ public class EventController {
     }
 
     @GetMapping("/events/recommendations")
-    public List<EventShortDto> getRecommendations(Long userId) {
+    public List<EventShortDto> getRecommendations(@RequestHeader("X-EWM-USER-ID") Long userId) {
         log.info("GET /events/recommendations for user {}", userId);
         return eventService.getRecommendations(userId);
     }
