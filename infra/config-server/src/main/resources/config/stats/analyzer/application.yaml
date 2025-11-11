@@ -25,7 +25,7 @@ spring:
       date-time: yyyy-MM-dd HH:mm:ss
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:6541/statistics
+    url: jdbc:postgresql://localhost:5432/statistics
     username: statistics
     password: statistics
   kafka:
@@ -35,6 +35,10 @@ spring:
         group-id: analyzer-consumer-user-action-group
       event-similarity:
         group-id: analyzer-consumer-event-similarity-group
+kafka:
+  topics:
+    event-similarity: stats.events-similarity.v1
+    user-action: stats.user-actions.v1
 
 logging:
   pattern:
