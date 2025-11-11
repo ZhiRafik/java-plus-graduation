@@ -8,7 +8,7 @@ import ru.practicum.aggregator.service.AggregatorStarter;
 @Component
 @RequiredArgsConstructor
 public class AggregatorRunner implements CommandLineRunner {
-    private final AggregatorStarter aggregationStarter;
+    final AggregatorStarter aggregationStarter;
 
     @Override
     public void run(String... args) throws Exception {
