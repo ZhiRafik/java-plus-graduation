@@ -12,7 +12,7 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class AggregatorServiceImpl {
+public class AggregatorServiceImpl implements AggregatorService {
     private final Map<Long, Map<Long, Double>> eventUserWeight = new HashMap<>();
     private final Map<Long, Double> eventSumWeight = new HashMap<>();
     private final Map<Long, Map<Long, Double>> eventSumMinWeight = new HashMap<>();
