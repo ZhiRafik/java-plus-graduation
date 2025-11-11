@@ -8,10 +8,9 @@ spring:
       discovery:
         enabled: true
         serviceId: config-server
-    retry:
-      use-random-policy: true
-      max-interval: 5000
-
+      retry:
+        use-random-policy: true
+        max-interval: 5000
 eureka:
   client:
     serviceUrl:
