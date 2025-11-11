@@ -21,14 +21,9 @@ logging:
   pattern:
     console: "[%X{requestId}] %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"
   level:
-    root: TRACE
     org.springframework.orm.jpa: INFO
     org.springframework.transaction: INFO
-    org.springframework.transaction.interceptor: TRACE
-    org.hibernate.type.descriptor.sql: TRACE
     org.springframework.orm.jpa.JpaTransactionManager: DEBUG
-    org.zalando.logbook: TRACE
-    ru.practicum: TRACE
     sun.rmi: INFO
     java.io.serialization: INFO
     org.apache.tomcat.util.net.NioEndpoint: INFO
