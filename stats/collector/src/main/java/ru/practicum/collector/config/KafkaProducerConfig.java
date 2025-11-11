@@ -19,7 +19,7 @@ public class KafkaProducerConfig {
     private String BOOTSTRAP_SERVERS;
 
     @Bean
-    public Producer<String, SpecificRecordBase> createProducer() {
+    public KafkaProducer<String, SpecificRecordBase> createProducer() {
         Properties config = new Properties();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
