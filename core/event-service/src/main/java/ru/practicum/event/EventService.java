@@ -15,7 +15,7 @@ public interface EventService {
                                  String rangeStart, String rangeEnd, Boolean onlyAvailable,
                                  String sort, Integer from, Integer size, String user);
 
-    EventFullDto getEventById(long eventId, long userId);
+    EventFullDto getEventById(Long eventId, Long userId);
 
     List<EventShortDto> getEventsByUserId(long userId, Integer from, Integer size);
 
@@ -33,5 +33,5 @@ public interface EventService {
 
     List<EventShortDto> getRecommendations(long userId);
 
-    void likeEvent(long eventId, long userId);
+    void likeEvent(Long eventId, Long userId);
 }

@@ -29,7 +29,8 @@ public class EventController {
     }
 
     @PutMapping("/events/{eventId}/like")
-    public void likeEvent(@PathVariable Long eventId, @RequestHeader("X-EWM-USER-ID") Long userId) {
+    public void likeEvent(@PathVariable Long eventId,
+                          @RequestHeader(value = "X-EWM-USER-ID", required = false) Long userId) {
         log.info("GET /events/{}/like/ for user {}", eventId, userId);
         eventService.likeEvent(eventId, userId);
     }
@@ -52,7 +53,8 @@ public class EventController {
     }
 
     @GetMapping("/events/{eventId}")
-    public EventFullDto getEventById(@PathVariable Long eventId, @RequestHeader("X-EWM-USER-ID") Long userId) {
+    public EventFullDto getEventById(@PathVariable Long eventId,
+                                     @RequestHeader(value = "X-EWM-USER-ID", required = false) Long userId) {
         log.info("GET /events/{}, с userId={}", eventId, userId);
         return eventService.getEventById(eventId, userId);
     }

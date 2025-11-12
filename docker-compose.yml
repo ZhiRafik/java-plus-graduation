@@ -1,9 +1,12 @@
 services:
+  # Базы данных
   stats-db:
     image: postgres:16.1
     container_name: postgres-stats-db
     ports:
       - "6541:5432"
+    volumes:
+      - ./init-sql:/docker-entrypoint-initdb.d/recommendation.sql
     environment:
       - POSTGRES_PASSWORD=statistics
       - POSTGRES_USER=statistics
@@ -13,50 +16,32 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
-  stats-server:
-    build: stats/stats-server
-    image: ewm-stats
-    container_name: ewm-stats
-    ports:
-      - "9090:9090"
-    depends_on:
-      - stats-db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/statistics
-      - SPRING_DATASOURCE_USERNAME=statistics
-      - SPRING_DATASOURCE_PASSWORD=statistics
-  ewm-service:
-    build: main-service/main-server
-    image: ewm-service
-    container_name: ewm-service
-    ports:
-      - "8080:8080"
-    depends_on:
-      - ewm-db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/mainservice
-      - SPRING_DATASOURCE_USERNAME=mainservice
-      - SPRING_DATASOURCE_PASSWORD=mainservice
-      - STATS_SERVER_URL=http://ewm-stats:9090
 
   ewm-db:
     image: postgres:16.1
     container_name: postgres-ewm-db
     ports:
       - "6542:5432"
+    volumes:
+      - ./init-sql:/docker-entrypoint-initdb.d/core.sql
     environment:
       - POSTGRES_PASSWORD=mainservice
       - POSTGRES_USER=mainservice
       - POSTGRES_DB=mainservice
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
+  # Kafka
   kafka:
     image: confluentinc/confluent-local:7.4.3
     hostname: kafkaRecommendation
     container_name: kafkaRecommendation
     ports:
-      - "9092:9092" # for client connections
-      - "9101:9101" # JMX
-    restart: unless-stopped
+      - "9092:9092"
+      - "9101:9101"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafkaRecommendation:29092,PLAINTEXT_HOST://localhost:9092'
@@ -66,17 +51,76 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafkaRecommendation:29093'
       KAFKA_LISTENERS: 'PLAINTEXT://kafkaRecommendation:29092,CONTROLLER://kafkaRecommendation:29093,PLAINTEXT_HOST://0.0.0.0:9092'
       CLUSTER_ID: 'K0EA9p0yEe6MkAAAAkKsEg'
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--list", "--bootstrap-server", "localhost:9092"]
+      timeout: 10s
+      retries: 10
 
   kafka-init-topics:
     image: confluentinc/confluent-local:7.4.3
     container_name: kafka-init-topics-recommendation
     depends_on:
       - kafka
-    command: "bash -c \
-                'kafka-topics --create --topic stats.user-actions.v1 \
-                             --partitions 1 --replication-factor 1 --if-not-exists \
-                             --bootstrap-server kafkaRecommendation:29092 && \
-                kafka-topics --create --topic stats.events-similarity.v1 \
-                             --partitions 1 --replication-factor 1 --if-not-exists \
-                             --bootstrap-server kafkaRecommendation:29092'"
+    command: "bash -c 'kafka-topics --create --topic stats.user-actions.v1 --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafkaRecommendation:29092 && kafka-topics --create --topic stats.events-similarity.v1 --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafkaRecommendation:29092'"
     init: true
+
+  # ОБНОВЛЕНИЕ: Сервисы приложения (запустит ли кафку?)
+  stats-server:
+    build: stats/stats-server
+    image: ewm-stats
+    container_name: ewm-stats
+    ports:
+      - "9090:9090"
+    depends_on:
+      stats-db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/statistics
+      - SPRING_DATASOURCE_USERNAME=statistics
+      - SPRING_DATASOURCE_PASSWORD=statistics
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafkaRecommendation:9092
+
+  ewm-service:
+    build: main-service/main-server
+    image: ewm-service
+    container_name: ewm-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      ewm-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/mainservice
+      - SPRING_DATASOURCE_USERNAME=mainservice
+      - SPRING_DATASOURCE_PASSWORD=mainservice
+      - STATS_SERVER_URL=http://stats-server:9090
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafkaRecommendation:9092
+
+  collector:
+    build: collector
+    image: ewm-collector
+    container_name: ewm-collector
+    ports:
+      - "9091:9091"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafkaRecommendation:9092
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  # Service Discovery & Config
+  config-server:
+    build: config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+
+  eureka-server:
+    build: eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"

@@ -247,7 +247,7 @@ public class EventServiceImpl implements EventService {
     }
 
 
-    public EventFullDto getEventById(long eventId, long userId) {
+    public EventFullDto getEventById(Long eventId, Long userId) {
         log.debug("Получен запрос на получение события с eventId={} от userId={}", eventId, userId);
 
         Optional<Event> eventOpt = eventRepository.findById(eventId);
@@ -270,7 +270,9 @@ public class EventServiceImpl implements EventService {
 
         log.debug("Отправляем статистику по просмотру события с eventId " + eventId
                 + " пользователем с userId " + userId);
-        statsClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_VIEW); // <--- ОЧЕНЬ ДОЛГО ВИСНЕТ
+        if (userId != null) {
+            statsClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_VIEW);
+        }
         log.debug("Отправили статистику");
 
         log.debug("Рейтинг события с id={}: {}", eventId, rating);
@@ -319,11 +321,13 @@ public class EventServiceImpl implements EventService {
         return eventDtoMapper.mapToFullDto(saved);
     }
 
-    public void likeEvent(long eventId, long userId) {
+    public void likeEvent(Long eventId, Long userId) {
         checkAndGetEventById(eventId);
         checkUserId(userId);
         log.debug("Отправляем статистику о действии пользователя с userId " + userId);
-        statsClient.sendUserAction(eventId, userId, ActionTypeProto.ACTION_LIKE);
+        if (userId != null) {
+            statsClient.sendUserAction(eventId, userId, ActionTypeProto.ACTION_LIKE);
+        }
         log.debug("Отправляем статистику о действии пользователя");
     }
 
