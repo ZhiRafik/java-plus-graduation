@@ -34,7 +34,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto createComment(Long userId, Long eventId, NewCommentDto newCommentDto) {
-        EventFullDto event = getEvent(eventId);
+        EventFullDto event = getEvent(eventId, userId);
         if(!event.getState().equals(State.PUBLISHED))
             throw new ConflictRelationsConstraintException("Нельзя добавить комментарий если событие не опубликовано");
 
@@ -75,10 +75,10 @@ public class CommentServiceImpl implements CommentService {
 
         if (userId != null) {
             user = getUser(userId);
+            if (eventId != null) {
+                event = getEvent(eventId, userId);
+            };
         }
-        if (eventId != null) {
-            event = getEvent(eventId);
-        };
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
         if (rangeStart == null || rangeStart.isBlank()) {
@@ -143,8 +143,8 @@ public class CommentServiceImpl implements CommentService {
         return userAdminClient.getUserById(userId);
     }
 
-    private EventFullDto getEvent(Long eventId) {
-        return eventClient.getEventById(eventId, "commentService");
+    private EventFullDto getEvent(Long eventId, Long userId) {
+        return eventClient.getEventById(eventId, userId);
     }
 
     private Comment getCommentByUserId(Long userId, Long commentId) {

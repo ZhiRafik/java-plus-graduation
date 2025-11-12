@@ -1,6 +1,5 @@
 package ru.practicum.event;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -24,37 +23,40 @@ public class EventController {
     @PostMapping("/users/{userId}/events")
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto saveEvent(@Valid @RequestBody NewEventDto newEventDto,
-                                  @PathVariable(name = "userId") Long userId,
-                                  HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        log.info("Получен запрос на создание события от пользователя с ID {}, IP: {}", userId, ip);
-        return eventService.saveEvent(newEventDto, userId, ip);
+                                  @PathVariable(name = "userId") Long userId) {
+        log.info("Получен запрос на создание события от пользователя {}", userId);
+        return eventService.saveEvent(newEventDto, userId);
+    }
+
+    @PutMapping("/events/{eventId}/like")
+    public void likeEvent(@PathVariable Long eventId,
+                          @RequestHeader(value = "X-EWM-USER-ID", required = false) Long userId) {
+        log.info("GET /events/{}/like/ for user {}", eventId, userId);
+        eventService.likeEvent(eventId, userId);
     }
 
     @PatchMapping("/users/{userId}/events/{eventId}")
     public EventFullDto updateEventByIdAndUserId(@RequestBody @Valid UpdatedEventDto updatedEventDto,
                                                  @PathVariable Long userId,
-                                                 @PathVariable Long eventId,
-                                                 HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        log.info("PATCH /users/{}/events/{} from IP {}", userId, eventId, ip);
-        return eventService.updateEvent(updatedEventDto, userId, eventId, ip);
+                                                 @PathVariable Long eventId) {
+        
+        log.info("PATCH /users/{}/events/{}", userId, eventId);
+        return eventService.updateEvent(updatedEventDto, userId, eventId);
     }
 
     @PatchMapping("/admin/events/{eventId}")
     public EventFullDto updateAdminEventById(@RequestBody @Valid UpdatedEventDto updatedEventDto,
-                                                 @PathVariable Long eventId,
-                                                 HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        log.info("PATCH /admin/events/{} from IP {}", eventId, ip);
-        return eventService.updateAdminEvent(updatedEventDto, eventId, ip);
+                                                 @PathVariable Long eventId) {
+        
+        log.info("PATCH /admin/events/{} ", eventId);
+        return eventService.updateAdminEvent(updatedEventDto, eventId);
     }
 
-    @GetMapping("/events/{id}")
-    public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        log.info("GET /events/{} from IP {}", id, ip);
-        return eventService.getEventById(id, ip);
+    @GetMapping("/events/{eventId}")
+    public EventFullDto getEventById(@PathVariable Long eventId,
+                                     @RequestHeader(value = "X-EWM-USER-ID", required = false) Long userId) {
+        log.info("GET /events/{}, с userId={}", eventId, userId);
+        return eventService.getEventById(eventId, userId);
     }
 
     @GetMapping("/events")
@@ -67,34 +69,31 @@ public class EventController {
             @RequestParam(required = false) String rangeEnd,
             @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size,
-            HttpServletRequest request
-    ) {
-        String ip = request.getRemoteAddr();
-        log.info("GET /events from IP {}, params: text={}, categories={}, paid={}, rangeStart={}, rangeEnd={}, sort={}, from={}, size={}",
-                ip, text, categories, paid, rangeStart, rangeEnd, sort, from, size);
+            @RequestParam(defaultValue = "10") Integer size) {
+        
+        log.info("GET /event params: text={}, categories={}, paid={}, rangeStart={}, rangeEnd={}, sort={}, from={}, size={}",
+                text, categories, paid, rangeStart, rangeEnd, sort, from, size);
         return eventService.getEvents(text, categories, paid,
                                         rangeStart, rangeEnd,
                                         onlyAvailable, sort, from, size,
-                                        ip, "user");
+                                        "user");
     }
 
     @GetMapping("/users/{userId}/events")
-    public List<EventShortDto> getEventsByUserId(@PathVariable Long userId, HttpServletRequest request,
+    public List<EventShortDto> getEventsByUserId(@PathVariable Long userId,
                                                  @RequestParam(required = false) Integer from,
                                                  @RequestParam(required = false) Integer size) {
-        String ip = request.getRemoteAddr();
-        log.info("GET /users/{}/events from IP {}, from={}, size={}", userId, ip, from, size);
-        return eventService.getEventsByUserId(userId, from, size, ip);
+        
+        log.info("GET /users/{}/events, from={}, size={}", userId, from, size);
+        return eventService.getEventsByUserId(userId, from, size);
     }
 
     @GetMapping("/users/{userId}/events/{eventId}")
     public EventFullDto getEventByUserIdAndEventId(@PathVariable("userId") Long userId,
-                                                   @PathVariable("eventId") Long eventId,
-                                                   HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        log.info("GET /users/{}/events/{} from IP {}, from={}, size={}", userId, eventId, ip);
-        return eventService.getEventByUserIdAndEventId(userId, eventId, ip);
+                                                   @PathVariable("eventId") Long eventId) {
+        
+        log.info("GET /users/{}/events/{}, from={}, size={}", userId, eventId);
+        return eventService.getEventByUserIdAndEventId(userId, eventId);
     }
 
     @GetMapping("/admin/events")
@@ -107,16 +106,20 @@ public class EventController {
             @RequestParam(required = false) String rangeEnd,
             @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") @Positive Integer size,
-            HttpServletRequest request
-    ) {
-        String ip = request.getRemoteAddr();
-        log.info("GET /admin/events from IP {}, params: text={}, categories={}, paid={}, rangeStart={}, rangeEnd={}, sort={}, from={}, size={}",
-                ip, text, categories, paid, rangeStart, rangeEnd, sort, from, size);
+            @RequestParam(defaultValue = "10") @Positive Integer size) {
+        
+        log.info("GET /admin/events, params: text={}, categories={}, paid={}, rangeStart={}, rangeEnd={}, sort={}, from={}, size={}",
+                text, categories, paid, rangeStart, rangeEnd, sort, from, size);
         return eventService.getEvents(text, categories, paid,
                 rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size,
-                ip, "admin");
+                "admin");
+    }
+
+    @GetMapping("/events/recommendations")
+    public List<EventShortDto> getRecommendations(@RequestHeader("X-EWM-USER-ID") Long userId) {
+        log.info("GET /events/recommendations for user {}", userId);
+        return eventService.getRecommendations(userId);
     }
 
     @PostMapping("/admin/events/increment")
