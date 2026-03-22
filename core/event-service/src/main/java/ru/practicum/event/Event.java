@@ -22,7 +22,6 @@ public class Event {
     long id;
     @Column(columnDefinition = "TEXT")
     String annotation;
-
     @Column(name = "category_id")
     Long category;
     @Column(name = "confirmed_requests")
@@ -53,5 +52,5 @@ public class Event {
     State state;
     String title;
     @Transient
-    Long views;
+    Double rating;
 }

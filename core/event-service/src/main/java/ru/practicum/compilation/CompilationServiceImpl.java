@@ -101,7 +101,7 @@ public class CompilationServiceImpl implements CompilationService {
                         .eventDate(event.getEventDate())
                         .paid(event.getPaid())
                         .confirmedRequests(event.getConfirmedRequests())
-                        .views(event.getViews())
+                        .rating(event.getRating())
                         .initiator(userAdminClient.getUserShortById(event.getInitiatorId()))
                         .category(categoryService.getById(event.getCategory()))
                         .build())
